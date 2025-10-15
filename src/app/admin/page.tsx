@@ -83,6 +83,12 @@ export default function AdminPage() {
                 Réservations
               </Link>
               <Link
+                href="/admin/artistes"
+                className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Artistes
+              </Link>
+                <Link
                 href="/admin/boutique"
                 className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
@@ -131,6 +137,12 @@ export default function AdminPage() {
                 >
                   Réservations
                 </Link>
+              <Link
+                href="/admin/artistes"
+                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Artistes
+              </Link>                
                 <Link
                   href="/admin/boutique"
                   className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"

@@ -281,6 +281,13 @@ export default function AdminBoutiquePage() {
                 Réservations
               </Link>
               <Link
+                href="/admin/artistes"
+                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Artistes
+              </Link>
+
+              <Link
                 href="/admin/boutique"
                 className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
@@ -329,6 +336,12 @@ export default function AdminBoutiquePage() {
                 >
                   Réservations
                 </Link>
+              <Link
+                href="/admin/artistes"
+                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Artistes
+              </Link>                
                 <Link
                   href="/admin/boutique"
                   className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"

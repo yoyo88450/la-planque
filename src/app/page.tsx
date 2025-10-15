@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { testimonials } from "../data/mockData";
+import ArtistsSection from "../components/ArtistsSection";
 
 export default function Home() {
   return (
@@ -108,6 +109,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ArtistsSection />
 
       {/* Testimonials Section */}
       <section className="py-16 bg-gray-900">
