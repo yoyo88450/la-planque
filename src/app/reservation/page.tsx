@@ -15,9 +15,6 @@ export default function ReservationPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [selectedTime, setSelectedTime] = useState('');
-  const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const addBooking = useBookingStore((state) => state.addBooking);
   const getBookingsByDate = useBookingStore((state) => state.getBookingsByDate);
@@ -48,8 +45,6 @@ export default function ReservationPage() {
       message: ''
     });
     setSelectedDate('');
-    setShowForm(false);
-    setSelectedTime('');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -57,20 +52,6 @@ export default function ReservationPage() {
       ...formData,
       [e.target.name]: e.target.value
     });
-  };
-
-  const handleTimeClick = (time: string, dateStr: string) => {
-    const isBooked = getBookingsByDate(dateStr).some(booking => booking.time === time);
-    if (!isBooked) {
-      setSelectedTime(time);
-      setSelectedDate(dateStr);
-      setFormData(prev => ({
-        ...prev,
-        date: dateStr,
-        times: [time]
-      }));
-      setShowForm(true);
-    }
   };
 
   if (isSubmitted) {
@@ -92,50 +73,47 @@ export default function ReservationPage() {
     );
   }
 
-  // Generate week dates starting from Monday
-  const generateWeekDates = () => {
-    const week = [];
-    const startOfWeek = new Date(currentWeek);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
-    startOfWeek.setDate(diff);
+  // Calendar state
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      week.push(date);
+  // Generate calendar dates for current month
+  const generateCalendarDates = () => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+
+    // Get first day of month and last day of month
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+
+    // Get the day of week for first day (0 = Sunday, 1 = Monday, etc.)
+    const firstDayOfWeek = firstDay.getDay();
+
+    // Generate all dates for the calendar grid
+    const dates = [];
+
+    // Add empty cells for days before the first day of month
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      dates.push(null);
     }
-    return week;
+
+    // Add all days of the month
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      dates.push(new Date(year, month, day));
+    }
+
+    return dates;
   };
 
-  const weekDates = generateWeekDates();
-
-  // Generate full day time slots (9 AM to 6 PM, every hour)
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 9; hour <= 18; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-    }
-    return slots;
-  };
-
-  const timeSlots = generateTimeSlots();
+  const calendarDates = generateCalendarDates();
+  const bookedSlots = selectedDate ? getBookingsByDate(selectedDate) : [];
 
   // Navigation functions
-  const goToPreviousWeek = () => {
-    setCurrentWeek(prev => {
-      const newDate = new Date(prev);
-      newDate.setDate(prev.getDate() - 7);
-      return newDate;
-    });
+  const goToPreviousMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
 
-  const goToNextWeek = () => {
-    setCurrentWeek(prev => {
-      const newDate = new Date(prev);
-      newDate.setDate(prev.getDate() + 7);
-      return newDate;
-    });
+  const goToNextMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
   // Check if date is in the past
@@ -145,24 +123,12 @@ export default function ReservationPage() {
     return date < today;
   };
 
-  // Check if time slot is in the past for today
-  const isTimeSlotInPast = (dateStr: string, time: string) => {
-    const today = new Date();
-    const slotDate = new Date(dateStr);
-    if (slotDate.toDateString() !== today.toDateString()) return false;
-
-    const [hours] = time.split(':').map(Number);
-    const slotTime = new Date(today);
-    slotTime.setHours(hours, 0, 0, 0);
-    return slotTime < today;
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h1 className="text-5xl font-bold text-center text-white mb-4">Réserver votre session</h1>
-          <p className="text-center text-gray-300 mb-12 text-lg">Choisissez votre créneau horaire pour une session d'enregistrement professionnelle</p>
+          <p className="text-center text-gray-300 mb-12 text-lg">Choisissez votre date et service pour une session d'enregistrement professionnelle</p>
 
           {/* Info Section */}
           <div className="mt-12 bg-gradient-to-r from-gray-800/50 to-gray-700/50 backdrop-blur-sm border border-gray-600 rounded-2xl p-8">
@@ -198,284 +164,275 @@ export default function ReservationPage() {
 
           <br></br>
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
-            {/* Weekly Calendar Section */}
-            <div className="xl:col-span-2 bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Calendar Section */}
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
+              <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
+                <svg className="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Sélectionnez une date
+              </h2>
+
+              {/* Month Navigation */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-semibold text-white flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <button
+                  onClick={goToPreviousMonth}
+                  className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  Semaine du {weekDates[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-                </h2>
+                </button>
 
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={goToPreviousWeek}
-                    className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
+                <h3 className="text-xl font-semibold text-white">
+                  {currentMonth.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}
+                </h3>
 
-                  <button
-                    onClick={goToNextWeek}
-                    className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
+                <button
+                  onClick={goToNextMonth}
+                  className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
 
-              {/* Week Calendar Grid */}
-              <div className="overflow-x-auto">
-                <div className="min-w-full">
-                  {/* Header with days */}
-                  <div className="grid grid-cols-8 gap-1 mb-2">
-                    <div className="p-2 text-center text-gray-400 font-medium text-sm">Heure</div>
-                    {weekDates.map((date, index) => {
-                      const isToday = date.toDateString() === new Date().toDateString();
-                      const isPast = isDateInPast(date);
+              <div className="grid grid-cols-7 gap-2 mb-4">
+                {['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'].map(day => (
+                  <div key={day} className="text-center text-gray-400 font-medium text-sm py-2">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-2">
+                {calendarDates.map((date, index) => {
+                  if (!date) {
+                    return <div key={index} className="aspect-square"></div>;
+                  }
+
+                  const dateStr = date.toISOString().split('T')[0];
+                  const isSelected = selectedDate === dateStr;
+                  const dayBookings = getBookingsByDate(dateStr);
+                  const isFullyBooked = dayBookings.length >= 6;
+                  const isPast = isDateInPast(date);
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => !isPast && !isFullyBooked && setSelectedDate(dateStr)}
+                      className={`aspect-square rounded-xl text-sm font-medium transition-all duration-200 ${
+                        isSelected
+                          ? 'bg-blue-600 text-white shadow-lg scale-105'
+                          : isFullyBooked
+                          ? 'bg-red-900/50 text-red-300 cursor-not-allowed line-through'
+                          : isPast
+                          ? 'bg-gray-800/50 text-gray-500 cursor-not-allowed'
+                          : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:scale-105'
+                      }`}
+                      disabled={isPast || isFullyBooked}
+                    >
+                      {date.getDate()}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedDate && (
+                <div className="mt-6 p-4 bg-gray-700/50 rounded-xl">
+                  <h3 className="text-white font-semibold mb-3">Sélectionnez vos créneaux - {new Date(selectedDate).toLocaleDateString('fr-FR')}</h3>
+                  <p className="text-gray-400 text-sm mb-4">Vous pouvez sélectionner plusieurs créneaux pour la même journée</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(time => {
+                      const isBooked = bookedSlots.some(booking => booking.time === time);
+                      const isSelected = formData.date === selectedDate && formData.times.includes(time);
                       return (
-                        <div
-                          key={index}
-                          className={`p-2 text-center text-sm font-medium ${
-                            isToday
-                              ? 'text-blue-400 bg-blue-900/20 rounded-lg'
-                              : isPast
-                              ? 'text-gray-500'
-                              : 'text-gray-300'
+                        <button
+                          key={time}
+                          onClick={() => {
+                            if (isBooked) return;
+                            setFormData(prev => {
+                              const newTimes = isSelected
+                                ? prev.times.filter(t => t !== time)
+                                : [...prev.times, time];
+                              return {
+                                ...prev,
+                                date: selectedDate,
+                                times: newTimes
+                              };
+                            });
+                          }}
+                          disabled={isBooked}
+                          className={`p-3 rounded-lg text-sm font-medium text-center transition-all duration-200 relative ${
+                            isBooked
+                              ? 'bg-red-900/50 text-red-300 line-through cursor-not-allowed'
+                              : isSelected
+                              ? 'bg-blue-600 text-white shadow-lg scale-105'
+                              : 'bg-green-900/50 text-green-300 hover:bg-green-800/50 hover:scale-105'
                           }`}
                         >
-                          <div className="font-semibold">
-                            {date.toLocaleDateString('fr-FR', { weekday: 'short' })}
-                          </div>
-                          <div className="text-xs">
-                            {date.getDate()}
-                          </div>
-                        </div>
+                          {time}
+                          {isSelected && (
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-400 rounded-full flex items-center justify-center">
+                              <svg className="w-2 h-2 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                          )}
+                        </button>
                       );
                     })}
                   </div>
 
-                  {/* Time slots grid */}
-                  <div className="space-y-1">
-                    {timeSlots.map((time) => (
-                      <div key={time} className="grid grid-cols-8 gap-1">
-                        <div className="p-2 text-center text-gray-400 font-medium text-sm bg-gray-700/30 rounded-lg">
-                          {time}
-                        </div>
-                        {weekDates.map((date) => {
-                          const dateStr = date.toISOString().split('T')[0];
-                          const isBooked = getBookingsByDate(dateStr).some(booking => booking.time === time);
-                          const isPast = isDateInPast(date) || isTimeSlotInPast(dateStr, time);
-                          const isToday = date.toDateString() === new Date().toDateString();
-
-                          return (
-                            <button
-                              key={`${dateStr}-${time}`}
-                              onClick={() => !isPast && !isBooked && handleTimeClick(time, dateStr)}
-                              disabled={isPast || isBooked}
-                              className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 min-h-[40px] ${
-                                isBooked
-                                  ? 'bg-red-900/50 text-red-300 cursor-not-allowed'
-                                  : isPast
-                                  ? 'bg-gray-800/50 text-gray-500 cursor-not-allowed'
-                                  : isToday
-                                  ? 'bg-blue-900/30 text-blue-300 hover:bg-blue-600 hover:text-white border border-blue-600/30'
-                                  : 'bg-gray-700/50 text-gray-300 hover:bg-green-600 hover:text-white'
-                              }`}
-                            >
-                              {isBooked ? 'Réservé' : isPast ? 'Passé' : 'Libre'}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
+                  {formData.times.length > 0 && (
+                    <div className="mt-4 p-3 bg-blue-900/20 border border-blue-600/30 rounded-lg">
+                      <p className="text-blue-300 text-sm font-medium">
+                        {formData.times.length} créneau{formData.times.length > 1 ? 'x' : ''} sélectionné{formData.times.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              {/* Legend */}
-              <div className="mt-6 flex flex-wrap gap-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-gray-700/50 rounded"></div>
-                  <span className="text-gray-300">Libre</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-green-600 rounded"></div>
-                  <span className="text-gray-300">Survol</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-red-900/50 rounded"></div>
-                  <span className="text-gray-300">Réservé</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-gray-800/50 rounded"></div>
-                  <span className="text-gray-300">Passé</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-900/30 border border-blue-600/30 rounded"></div>
-                  <span className="text-gray-300">Aujourd'hui</span>
-                </div>
-              </div>
+              )}
             </div>
 
             {/* Form Section */}
-            {showForm && (
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-semibold text-white flex items-center">
-                    <svg className="w-6 h-6 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Réservation - {selectedTime}
-                  </h2>
-                  <button
-                    onClick={() => {
-                      setShowForm(false);
-                      setSelectedTime('');
-                      setFormData(prev => ({ ...prev, times: [] }));
-                    }}
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8">
+              <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
+                <svg className="w-6 h-6 mr-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Informations de réservation
+              </h2>
 
-                <div className="mb-6 p-4 bg-blue-900/30 border border-blue-600/50 rounded-xl">
-                  <div className="flex items-center space-x-2 text-blue-300 mb-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-medium">Créneau sélectionné</span>
-                  </div>
-                  <p className="text-white font-semibold mb-2">
-                    {new Date(selectedDate).toLocaleDateString('fr-FR')} à {selectedTime}
-                  </p>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="service" className="block text-sm font-medium text-gray-300 mb-2">
-                        Service souhaité *
-                      </label>
-                      <select
-                        id="service"
-                        name="service"
-                        required
-                        value={formData.service}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      >
-                        <option value="" className="bg-gray-700">Choisir un service</option>
-                        <option value="enregistrement" className="bg-gray-700">Enregistrement</option>
-                        <option value="mixage" className="bg-gray-700">Mixage</option>
-                        <option value="mastering" className="bg-gray-700">Mastering</option>
-                      </select>
-                    </div>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="service" className="block text-sm font-medium text-gray-300 mb-2">
+                      Service souhaité *
+                    </label>
+                    <select
+                      id="service"
+                      name="service"
+                      required
+                      value={formData.service}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="" className="bg-gray-700">Choisir un service</option>
+                      <option value="enregistrement" className="bg-gray-700">Enregistrement</option>
+                      <option value="mixage" className="bg-gray-700">Mixage</option>
+                      <option value="mastering" className="bg-gray-700">Mastering</option>
+                    </select>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                          Nom complet *
-                        </label>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          required
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                          placeholder="Votre nom"
-                        />
+                  {/* Selected Date/Times Display */}
+                  {(formData.date && formData.times.length > 0) && (
+                    <div className="p-4 bg-blue-900/30 border border-blue-600/50 rounded-xl">
+                      <div className="flex items-center space-x-2 text-blue-300 mb-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm font-medium">
+                          {formData.times.length === 1 ? 'Créneau sélectionné' : `${formData.times.length} créneaux sélectionnés`}
+                        </span>
                       </div>
-
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={handleChange}
-                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                          placeholder="votre@email.com"
-                        />
+                      <p className="text-white font-semibold mb-2">
+                        {new Date(formData.date).toLocaleDateString('fr-FR')}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.times.map(time => (
+                          <span key={time} className="px-3 py-1 bg-blue-600/50 text-blue-200 rounded-lg text-sm">
+                            {time}
+                          </span>
+                        ))}
                       </div>
                     </div>
+                  )}
+                </div>
 
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
-                        Téléphone *
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                        Nom complet *
                       </label>
                       <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
+                        type="text"
+                        id="name"
+                        name="name"
                         required
-                        value={formData.phone}
+                        value={formData.name}
                         onChange={handleChange}
                         className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="+33 6 XX XX XX XX"
+                        placeholder="Votre nom"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                        Message (optionnel)
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                        Email *
                       </label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        rows={3}
-                        value={formData.message}
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
                         onChange={handleChange}
-                        placeholder="Informations supplémentaires, demandes spéciales..."
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        placeholder="votre@email.com"
                       />
                     </div>
                   </div>
 
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                  >
-                    <span className="flex items-center justify-center">
-                      <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Confirmer la réservation
-                    </span>
-                  </button>
-                </form>
-              </div>
-            )}
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
+                      Téléphone *
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      placeholder="+33 6 XX XX XX XX"
+                    />
+                  </div>
 
-            {/* Placeholder when no form is shown */}
-            {!showForm && (
-              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                  <h3 className="text-xl font-semibold text-gray-400 mb-2">Sélectionnez un créneau</h3>
-                  <p className="text-gray-500">Cliquez sur un horaire disponible dans le calendrier pour ouvrir le formulaire de réservation</p>
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                      Message (optionnel)
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={3}
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="Informations supplémentaires, demandes spéciales..."
+                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+
+                <button
+                  type="submit"
+                  disabled={!formData.date || formData.times.length === 0 || !formData.service}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                >
+                  <span className="flex items-center justify-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirmer {formData.times.length > 1 ? `les ${formData.times.length} réservations` : 'la réservation'}
+                  </span>
+                </button>
+              </form>
+            </div>
           </div>
 
 

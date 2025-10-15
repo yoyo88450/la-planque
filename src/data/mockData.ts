@@ -27,6 +27,7 @@ export interface Reservation {
   phone: string;
   guests: number;
   message?: string;
+  service?: string;
 }
 
 // Mock products for recording studio merchandise
@@ -98,22 +99,90 @@ export const testimonials: Testimonial[] = [
 export const mockReservations: Reservation[] = [
   {
     id: '1',
-    date: '2024-02-01',
+    date: '2025-10-15',
     time: '10:00',
     name: 'Pierre Dubois',
     email: 'pierre@example.com',
     phone: '06 12 34 56 78',
     guests: 2,
+    service: 'enregistrement',
     message: 'Réservation pour une sortie kayak'
   },
   {
     id: '2',
-    date: '2024-02-02',
+    date: '2025-10-16',
+    time: '09:00',
+    name: 'Jean Martin',
+    email: 'jean@example.com',
+    phone: '06 11 22 33 44',
+    guests: 1,
+    service: 'enregistrement',
+    message: 'Session individuelle'
+  },
+  {
+    id: '3',
+    date: '2025-10-16',
+    time: '10:00',
+    name: 'Marie Dupont',
+    email: 'marie@example.com',
+    phone: '06 55 66 77 88',
+    guests: 1,
+    service: 'mixage',
+    message: 'Mixage projet perso'
+  },
+  {
+    id: '4',
+    date: '2025-10-16',
+    time: '11:00',
+    name: 'Paul Durand',
+    email: 'paul@example.com',
+    phone: '06 99 88 77 66',
+    guests: 2,
+    service: 'enregistrement',
+    message: 'Duo musical'
+  },
+  {
+    id: '5',
+    date: '2025-10-16',
     time: '14:00',
     name: 'Anne Moreau',
     email: 'anne@example.com',
     phone: '06 98 76 54 32',
     guests: 4,
+    service: 'mixage',
     message: 'Groupe de 4 personnes'
+  },
+  {
+    id: '6',
+    date: '2025-10-16',
+    time: '15:00',
+    name: 'Lucie Bernard',
+    email: 'lucie@example.com',
+    phone: '06 44 33 22 11',
+    guests: 1,
+    service: 'mastering',
+    message: 'Mastering final'
+  },
+  {
+    id: '7',
+    date: '2025-10-17',
+    time: '16:00',
+    name: 'Marc Leroy',
+    email: 'marc@example.com',
+    phone: '06 11 22 33 44',
+    guests: 1,
+    service: 'mastering',
+    message: 'Session enregistrement'
+  },
+  {
+    id: '8',
+    date: '2025-10-18',
+    time: '09:00',
+    name: 'Sophie Rain',
+    email: 'sophie@example.com',
+    phone: '06 55 66 77 88',
+    guests: 3,
+    service: 'enregistrement',
+    message: 'Réservation familiale'
   }
 ];
