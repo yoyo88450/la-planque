@@ -14,32 +14,36 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-black shadow-md">
-      <nav className="container mx-auto px-4 py-4">
+    <header className="bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
+      <nav className="container mx-auto px-6 py-6">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-white">
+          <Link href="/" className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text hover:from-blue-200 hover:to-purple-200 transition-all duration-300 transform hover:scale-105">
             La Planque
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
-            <Link href="/" className="text-gray-300 hover:text-white transition-colors">
-              Accueil
+          <div className="hidden md:flex space-x-10">
+            <Link href="/" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+              <span className="relative z-10">Accueil</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
             </Link>
-            <Link href="/reservation" className="text-gray-300 hover:text-white transition-colors">
-              Réservation
+            <Link href="/reservation" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+              <span className="relative z-10">Réservation</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
             </Link>
-            <Link href="/boutique" className="text-gray-300 hover:text-white transition-colors">
-              Boutique
+            <Link href="/boutique" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+              <span className="relative z-10">Boutique</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
             </Link>
-            <Link href="/admin" className="text-gray-300 hover:text-white transition-colors">
-              Admin
+            <Link href="/admin" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+              <span className="relative z-10">Admin</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden text-white"
+            className="md:hidden text-white p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-all duration-300 transform hover:scale-110"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -51,35 +55,39 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden mt-6 pb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 backdrop-blur-sm border border-gray-600/50 rounded-2xl p-6 shadow-xl">
+            <div className="flex flex-col space-y-6">
               <Link
                 href="/"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Accueil
+                <span className="relative z-10">Accueil</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
               </Link>
               <Link
                 href="/reservation"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Réservation
+                <span className="relative z-10">Réservation</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
               </Link>
               <Link
                 href="/boutique"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Boutique
+                <span className="relative z-10">Boutique</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
               </Link>
               <Link
                 href="/admin"
-                className="text-gray-300 hover:text-white transition-colors"
+                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Admin
+                <span className="relative z-10">Admin</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
               </Link>
             </div>
           </div>
