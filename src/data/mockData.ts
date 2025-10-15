@@ -31,9 +31,16 @@ export interface Reservation {
 }
 
 // Mock categories
-export const categories: string[] = [
-  'Vêtements',
-  'Accessoires'
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export const categories: Category[] = [
+  { id: '1', name: 'Vêtements' },
+  { id: '2', name: 'Accessoires' },
+  { id: '3', name: 'Électronique' },
+  { id: '4', name: 'Livres' }
 ];
 
 // Mock products for recording studio merchandise

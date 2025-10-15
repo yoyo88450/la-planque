@@ -49,6 +49,11 @@ model Appointment {
   duration    Int      // in minutes
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+  // Client information
+  clientName  String?
+  clientEmail String?
+  clientPhone String?
+  clientMessage String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
