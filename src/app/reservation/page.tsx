@@ -14,6 +14,7 @@ export default function ReservationPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [existingReservations, setExistingReservations] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -84,17 +85,7 @@ export default function ReservationPage() {
           });
         });
 
-        setIsSubmitted(true);
-        setFormData({
-          date: '',
-          times: [],
-          service: '',
-          name: '',
-          email: '',
-          phone: '',
-          message: ''
-        });
-        setSelectedDate('');
+        setShowConfirmationModal(true);
       } else {
         console.error('Erreur lors de la création des rendez-vous');
         alert('Erreur lors de la réservation. Veuillez réessayer.');
@@ -105,6 +96,21 @@ export default function ReservationPage() {
     }
   };
 
+  const handleConfirmReservation = () => {
+    setShowConfirmationModal(false);
+    setIsSubmitted(true);
+    setFormData({
+      date: '',
+      times: [],
+      service: '',
+      name: '',
+      email: '',
+      phone: '',
+      message: ''
+    });
+    setSelectedDate('');
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -112,24 +118,6 @@ export default function ReservationPage() {
     });
   };
 
-  if (isSubmitted) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="max-w-md mx-auto bg-green-50 border border-green-200 rounded-lg p-8">
-          <h2 className="text-2xl font-bold text-green-800 mb-4">Réservation confirmée !</h2>
-          <p className="text-green-700 mb-6">
-            Merci pour votre réservation. Nous vous contacterons bientôt pour confirmer les détails.
-          </p>
-          <button
-            onClick={() => setIsSubmitted(false)}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-          >
-            Nouvelle réservation
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   // Generate calendar dates for current month
   const generateCalendarDates = () => {
@@ -494,6 +482,39 @@ export default function ReservationPage() {
 
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 shadow-2xl">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Réservation confirmée !</h3>
+              <p className="text-gray-600 mb-6">
+                Votre réservation a été enregistrée avec succès. Nous vous contacterons bientôt pour confirmer les détails.
+              </p>
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p><strong>Service:</strong> {formData.service}</p>
+                  <p><strong>Date:</strong> {new Date(formData.date).toLocaleDateString('fr-FR')}</p>
+                  <p><strong>Créneaux:</strong> {formData.times.join(', ')}</p>
+                  <p><strong>Nom:</strong> {formData.name}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleConfirmReservation}
+                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                Parfait !
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
