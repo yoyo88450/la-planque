@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBookingStore } from '../../lib/stores';
 
 export default function ReservationPage() {
@@ -15,9 +15,26 @@ export default function ReservationPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
+  const [existingReservations, setExistingReservations] = useState([]);
 
   const addBooking = useBookingStore((state) => state.addBooking);
   const getBookingsByDate = useBookingStore((state) => state.getBookingsByDate);
+
+  // Fetch existing reservations on component mount
+  useEffect(() => {
+    const fetchReservations = async () => {
+      try {
+        const response = await fetch('/api/reservations');
+        if (response.ok) {
+          const data = await response.json();
+          setExistingReservations(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch reservations:', error);
+      }
+    };
+    fetchReservations();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +123,7 @@ export default function ReservationPage() {
 
   const calendarDates = generateCalendarDates();
   const bookedSlots = selectedDate ? getBookingsByDate(selectedDate) : [];
+  const existingBookedSlots = selectedDate ? existingReservations.filter((res: any) => res.date === selectedDate) : [];
 
   // Navigation functions
   const goToPreviousMonth = () => {
@@ -213,7 +231,7 @@ export default function ReservationPage() {
                     return <div key={index} className="aspect-square"></div>;
                   }
 
-                  const dateStr = date.toISOString().split('T')[0];
+                  const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
                   const isSelected = selectedDate === dateStr;
                   const dayBookings = getBookingsByDate(dateStr);
                   const isFullyBooked = dayBookings.length >= 6;
@@ -245,8 +263,8 @@ export default function ReservationPage() {
                   <h3 className="text-white font-semibold mb-3">Sélectionnez vos créneaux - {new Date(selectedDate).toLocaleDateString('fr-FR')}</h3>
                   <p className="text-gray-400 text-sm mb-4">Vous pouvez sélectionner plusieurs créneaux pour la même journée</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'].map(time => {
-                      const isBooked = bookedSlots.some(booking => booking.time === time);
+                    {['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'].map(time => {
+                      const isBooked = bookedSlots.some(booking => booking.time === time) || existingBookedSlots.some((booking: any) => booking.time === time);
                       const isSelected = formData.date === selectedDate && formData.times.includes(time);
                       return (
                         <button
