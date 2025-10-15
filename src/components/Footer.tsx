@@ -22,7 +22,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contact</h4>
             <div className="text-gray-300 space-y-2">
-              <p>📍 123 Rue de la Musique, Paris</p>
+              <p>📍 123 Rue de la Musique, Metz</p>
               <p>📞 01 23 45 67 89</p>
               <p>✉️ contact@laplanque.fr</p>
             </div>

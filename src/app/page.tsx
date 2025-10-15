@@ -202,7 +202,7 @@ export default function Home() {
                       </div>
                       <div>
                         <h3 className="text-white font-semibold text-base md:text-lg mb-1">Adresse</h3>
-                        <p className="text-gray-300 text-sm md:text-base">123 Rue de la Musique<br />75001 Paris, France</p>
+                        <p className="text-gray-300 text-sm md:text-base">123 Rue de la Musique<br />57070 Metz, France</p>
                       </div>
                     </div>
 
