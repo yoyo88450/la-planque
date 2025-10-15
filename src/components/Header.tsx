@@ -23,10 +23,6 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-10">
-            <Link href="/" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
-              <span className="relative z-10">Accueil</span>
-              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-            </Link>
             <Link href="/reservation" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/reservation' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Réservation</span>
               <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/reservation' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
@@ -34,10 +30,6 @@ export default function Header() {
             <Link href="/boutique" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/boutique' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Boutique</span>
               <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-            </Link>
-            <Link href="/admin" className={`group relative transition-all duration-300 font-medium text-lg ${pathname?.startsWith('/admin') ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
-              <span className="relative z-10">Admin</span>
-              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname?.startsWith('/admin') ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
           </div>
 
@@ -58,14 +50,6 @@ export default function Header() {
           <div className="md:hidden mt-6 pb-6 bg-gradient-to-r from-gray-800/50 to-gray-700/50 backdrop-blur-sm border border-gray-600/50 rounded-2xl p-6 shadow-xl">
             <div className="flex flex-col space-y-6">
               <Link
-                href="/"
-                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="relative z-10">Accueil</span>
-                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-              </Link>
-              <Link
                 href="/reservation"
                 className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/reservation' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setIsMenuOpen(false)}
@@ -80,14 +64,6 @@ export default function Header() {
               >
                 <span className="relative z-10">Boutique</span>
                 <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-              </Link>
-              <Link
-                href="/admin"
-                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname?.startsWith('/admin') ? 'text-white' : 'text-gray-300 hover:text-white'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="relative z-10">Admin</span>
-                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname?.startsWith('/admin') ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
             </div>
           </div>
