@@ -12,6 +12,7 @@
     "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
     "@prisma/client": "^6.17.1",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "googleapis": "^162.0.0",
     "next": "15.5.5",

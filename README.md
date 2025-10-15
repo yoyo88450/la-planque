@@ -8,6 +8,8 @@ deploiement de la DB via fichier prisma :
 ```bash
 npx prisma generate
 npx prisma migrate dev --name init
+npx prisma db push
+
 ```
 
 demarrage projet :
