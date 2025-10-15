@@ -36,6 +36,8 @@ export default function AdminReservationsPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [currentDay, setCurrentDay] = useState(new Date());
+  const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [bookingFormData, setBookingFormData] = useState({
@@ -63,6 +65,18 @@ export default function AdminReservationsPage() {
   // Fetch appointments on component mount
   useEffect(() => {
     fetchAppointments();
+  }, []);
+
+  // Detect screen size and set view mode
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768; // md breakpoint
+      setViewMode(isMobile ? 'day' : 'week');
+    };
+
+    handleResize(); // Set initial mode
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const fetchAppointments = async () => {
@@ -342,6 +356,24 @@ export default function AdminReservationsPage() {
       return newDate;
     });
     setSelectedTimes([]); // Reset selections when changing week
+  };
+
+  const goToPreviousDay = () => {
+    setCurrentDay(prev => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() - 1);
+      return newDate;
+    });
+    setSelectedTimes([]); // Reset selections when changing day
+  };
+
+  const goToNextDay = () => {
+    setCurrentDay(prev => {
+      const newDate = new Date(prev);
+      newDate.setDate(prev.getDate() + 1);
+      return newDate;
+    });
+    setSelectedTimes([]); // Reset selections when changing day
   };
 
   // Check if date is in the past

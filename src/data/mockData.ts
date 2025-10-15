@@ -88,21 +88,21 @@ export const testimonials: Testimonial[] = [
   {
     id: '1',
     name: 'Marie Dupont',
-    message: 'Une expérience incroyable ! Le personnel est très accueillant et les équipements sont de qualité.',
+    message: '"Expérience incroyable ! L’équipe est super pro et m’a vraiment aidée à trouver le bon son pour mon EP. Le matos est top niveau et l’acoustique du studio… rien à dire. Je reviendrai pour mon prochain projet, c’est sûr !".',
     rating: 5,
     date: '2024-01-15'
   },
   {
     id: '2',
     name: 'Jean Martin',
-    message: 'Parfait pour une sortie en famille. Les kayaks sont faciles à manier et le cadre est magnifique.',
+    message: '"Très bon studio, bien équipé et ambiance détendue mais sérieuse. Le technicien était à l’écoute et a su capter exactement ce que je voulais. Petit bémol : la salle d’attente pourrait être un peu plus confortable, mais sinon, rien à redire."',
     rating: 5,
     date: '2024-01-20'
   },
   {
     id: '3',
     name: 'Sophie Laurent',
-    message: 'Service impeccable et matériel bien entretenu. Je recommande vivement !',
+    message: 'J’ai enregistré une maquette avec mon groupe et le rendu est au-delà de nos attentes. Le mixage est pro, les délais respectés, et le personnel est vraiment passionné. Gros plus : on nous a même conseillé pour la distribution en ligne !',
     rating: 4,
     date: '2024-01-25'
   }
