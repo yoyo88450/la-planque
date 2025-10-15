@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { products } from '../../data/mockData';
+import { products, categories } from '../../data/mockData';
 import { useCartStore } from '../../lib/stores';
 
 interface CartItem {
@@ -22,7 +22,7 @@ export default function BoutiquePage() {
   const cartItems = useCartStore((state) => state.items);
   const cartTotal = useCartStore((state) => state.getTotal());
 
-  const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
+  const categoryFilters = ['all', ...categories];
 
   const filteredProducts = selectedCategory === 'all'
     ? products
@@ -39,8 +39,9 @@ export default function BoutiquePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      {/* Floating Cart Button - Bottom */}
+    <div className="bg-black min-h-screen">
+      <div className="container mx-auto px-4 py-16">
+        {/* Floating Cart Button - Bottom */}
       <div className="fixed bottom-6 right-6 z-50">
         <button
           onClick={() => setIsCartOpen(!isCartOpen)}
@@ -172,7 +173,7 @@ export default function BoutiquePage() {
       {/* Category Filter */}
       <div className="flex justify-center mb-12">
         <div className="flex space-x-3">
-          {categories.map((category) => (
+          {categoryFilters.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
@@ -257,6 +258,7 @@ export default function BoutiquePage() {
             </ul>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

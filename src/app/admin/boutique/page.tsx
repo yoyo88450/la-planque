@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAdminStore } from '../../../lib/stores';
-import { products } from '../../../data/mockData';
+import { products, categories } from '../../../data/mockData';
 
 export default function AdminBoutiquePage() {
   const { isAuthenticated } = useAdminStore();
@@ -11,6 +11,9 @@ export default function AdminBoutiquePage() {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<typeof products[0] | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
+  const [localCategories, setLocalCategories] = useState(categories);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
@@ -57,6 +60,19 @@ export default function AdminBoutiquePage() {
   const handleDeleteProduct = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
       setProductList(productList.filter(p => p.id !== id));
+    }
+  };
+
+  const handleAddCategory = () => {
+    if (newCategory.trim() && !localCategories.includes(newCategory.trim())) {
+      setLocalCategories([...localCategories, newCategory.trim()]);
+      setNewCategory('');
+    }
+  };
+
+  const handleDeleteCategory = (category: string) => {
+    if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category}" ?`)) {
+      setLocalCategories(localCategories.filter(c => c !== category));
     }
   };
 
@@ -160,12 +176,20 @@ export default function AdminBoutiquePage() {
             <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Gestion de la boutique</h2>
             <p className="text-gray-400 text-sm md:text-base">Ajoutez, modifiez et supprimez les produits</p>
           </div>
-          <button
-            onClick={() => setIsAddingProduct(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm md:text-base"
-          >
-            + Ajouter un produit
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm md:text-base"
+            >
+              Catégories
+            </button>
+            <button
+              onClick={() => setIsAddingProduct(true)}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm md:text-base"
+            >
+              + Ajouter un produit
+            </button>
+          </div>
         </div>
 
         {/* Add Product Modal - Mobile Optimized */}
@@ -212,13 +236,18 @@ export default function AdminBoutiquePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Catégorie</label>
-                    <input
-                      type="text"
+                    <select
                       value={newProduct.category}
                       onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                      placeholder="Vêtements, Accessoires, etc."
-                    />
+                    >
+                      <option value="">Sélectionner une catégorie</option>
+                      {localCategories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="flex items-center">
@@ -292,12 +321,18 @@ export default function AdminBoutiquePage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Catégorie</label>
-                    <input
-                      type="text"
+                    <select
                       value={editingProduct.category}
                       onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
-                    />
+                    >
+                      <option value="">Sélectionner une catégorie</option>
+                      {localCategories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="flex items-center">
@@ -323,6 +358,62 @@ export default function AdminBoutiquePage() {
                     className="flex-1 bg-gray-600 text-white py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
                   >
                     Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Category Management Modal */}
+        {isCategoryModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg w-full max-w-md border border-gray-700 max-h-[90vh] overflow-y-auto">
+              <div className="p-4 md:p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Gestion des catégories</h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Nouvelle catégorie</label>
+                    <input
+                      type="text"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
+                      placeholder="Nom de la catégorie"
+                    />
+                    <button
+                      onClick={handleAddCategory}
+                      className="mt-2 w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-300 mb-2">Catégories existantes</h4>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {localCategories.map((category) => (
+                        <div key={category} className="flex justify-between items-center bg-gray-700 px-3 py-2 rounded-md">
+                          <span className="text-white text-sm">{category}</span>
+                          <button
+                            onClick={() => handleDeleteCategory(category)}
+                            className="text-red-400 hover:text-red-300 text-sm"
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                  <button
+                    onClick={() => setIsCategoryModalOpen(false)}
+                    className="flex-1 bg-gray-600 text-white py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                  >
+                    Fermer
                   </button>
                 </div>
               </div>

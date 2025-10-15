@@ -30,6 +30,12 @@ export interface Reservation {
   service?: string;
 }
 
+// Mock categories
+export const categories: string[] = [
+  'Vêtements',
+  'Accessoires'
+];
+
 // Mock products for recording studio merchandise
 export const products: Product[] = [
   {
