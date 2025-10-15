@@ -12,11 +12,11 @@
 }
 
 .animate-float-1 {
-  animation: float-1 6s ease-in-out infinite;
+  animation: float-1 4s ease-in-out infinite;
 }
 .animate-float-2 {
-  animation: float-2 8s ease-in-out infinite;
+  animation: float-2 5s ease-in-out infinite;
 }
 .animate-float-3 {
-  animation: float-3 7s ease-in-out infinite;
+  animation: float-3 3.5s ease-in-out infinite;
 }
