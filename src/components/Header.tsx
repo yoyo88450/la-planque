@@ -14,7 +14,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
       <nav className="container mx-auto px-6 py-6">
         <div className="flex justify-between items-center">
           <Link href="/" className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text hover:from-blue-200 hover:to-purple-200 transition-all duration-300 transform hover:scale-105">
@@ -23,21 +23,21 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-10">
-            <Link href="/" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+            <Link href="/" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Accueil</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
-            <Link href="/reservation" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+            <Link href="/reservation" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/reservation' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Réservation</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/reservation' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
-            <Link href="/boutique" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+            <Link href="/boutique" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/boutique' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Boutique</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
-            <Link href="/admin" className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg">
+            <Link href="/admin" className={`group relative transition-all duration-300 font-medium text-lg ${pathname?.startsWith('/admin') ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Admin</span>
-              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname?.startsWith('/admin') ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
           </div>
 
@@ -59,35 +59,35 @@ export default function Header() {
             <div className="flex flex-col space-y-6">
               <Link
                 href="/"
-                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
+                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="relative z-10">Accueil</span>
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
               <Link
                 href="/reservation"
-                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
+                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/reservation' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="relative z-10">Réservation</span>
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/reservation' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
               <Link
                 href="/boutique"
-                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
+                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/boutique' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="relative z-10">Boutique</span>
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
               <Link
                 href="/admin"
-                className="group relative text-gray-300 hover:text-white transition-all duration-300 font-medium text-lg py-2"
+                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname?.startsWith('/admin') ? 'text-white' : 'text-gray-300 hover:text-white'}`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span className="relative z-10">Admin</span>
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></div>
+                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname?.startsWith('/admin') ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
             </div>
           </div>
