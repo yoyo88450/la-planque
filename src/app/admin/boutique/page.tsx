@@ -1,26 +1,101 @@
-'use client';
+ 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAdminStore } from '../../../lib/stores';
-import { products, categories } from '../../../data/mockData';
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  inStock: boolean;
+  category: { id: string; name: string };
+  image?: string;
+}
+
+interface EditingProduct {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  inStock: boolean;
+  category: { id: string; name: string };
+  categoryId: string;
+  image?: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+}
 
 export default function AdminBoutiquePage() {
   const { isAuthenticated } = useAdminStore();
-  const [productList, setProductList] = useState(products);
+  const [productList, setProductList] = useState<Product[]>([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
-  const [editingProduct, setEditingProduct] = useState<typeof products[0] | null>(null);
+  const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [newCategory, setNewCategory] = useState('');
-  const [localCategories, setLocalCategories] = useState(categories);
+  const [localCategories, setLocalCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newProduct, setNewProduct] = useState({
     name: '',
     description: '',
     price: 0,
-    category: '',
-    inStock: true
+    categoryId: '',
+    inStock: true,
+    image: ''
   });
+
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, isEditing: boolean = false) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const base64 = await convertToBase64(file);
+        if (isEditing) {
+          setEditingProduct(prev => prev ? { ...prev, image: base64 } : null);
+        } else {
+          setNewProduct(prev => ({ ...prev, image: base64 }));
+        }
+      } catch (error) {
+        console.error('Erreur lors de la conversion de l\'image:', error);
+        alert('Erreur lors du traitement de l\'image');
+      }
+    }
+  };
+
+  // Fetch products and categories on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/admin/products');
+
+        if (response.ok) {
+          const data = await response.json();
+          setProductList(Array.isArray(data.products) ? data.products : []);
+          setLocalCategories(Array.isArray(data.categories) ? data.categories : []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   if (!isAuthenticated) {
     return (
@@ -33,46 +108,151 @@ export default function AdminBoutiquePage() {
     );
   }
 
-  const handleAddProduct = () => {
-    if (newProduct.name && newProduct.description && newProduct.category) {
-      const product = {
-        id: Date.now().toString(),
-        ...newProduct,
-        image: '/images/placeholder.jpg'
-      };
-      setProductList([...productList, product]);
-      setNewProduct({ name: '', description: '', price: 0, category: '', inStock: true });
-      setIsAddingProduct(false);
+  const handleAddProduct = async () => {
+    if (newProduct.name && newProduct.description && newProduct.categoryId) {
+      try {
+        const response = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: newProduct.name,
+            description: newProduct.description,
+            price: newProduct.price,
+            inStock: newProduct.inStock,
+            categoryId: newProduct.categoryId,
+            image: newProduct.image
+          }),
+        });
+
+        if (response.ok) {
+          const newProductData = await response.json();
+          setProductList([...productList, newProductData]);
+          setNewProduct({ name: '', description: '', price: 0, categoryId: '', inStock: true, image: '' });
+          setIsAddingProduct(false);
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erreur lors de l\'ajout du produit');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'ajout du produit');
+      }
     }
   };
 
-  const handleEditProduct = (product: typeof products[0]) => {
-    setEditingProduct(product);
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct({
+      ...product,
+      categoryId: product.category.id,
+      image: product.image || ''
+    });
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (editingProduct) {
-      setProductList(productList.map(p => p.id === editingProduct.id ? editingProduct : p));
-      setEditingProduct(null);
+      try {
+        const response = await fetch(`/api/admin/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: editingProduct.name,
+            description: editingProduct.description,
+            price: editingProduct.price,
+            inStock: editingProduct.inStock,
+            categoryId: editingProduct.categoryId,
+            image: editingProduct.image
+          }),
+        });
+
+        if (response.ok) {
+          const updatedProduct = await response.json();
+          setProductList(productList.map(p => p.id === editingProduct.id ? updatedProduct : p));
+          setEditingProduct(null);
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erreur lors de la modification du produit');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la modification du produit');
+      }
     }
   };
 
-  const handleDeleteProduct = (id: string) => {
+  const handleDeleteProduct = async (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-      setProductList(productList.filter(p => p.id !== id));
+      try {
+        const response = await fetch(`/api/admin/products/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          setProductList(productList.filter(p => p.id !== id));
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erreur lors de la suppression du produit');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la suppression du produit');
+      }
     }
   };
 
-  const handleAddCategory = () => {
-    if (newCategory.trim() && !localCategories.includes(newCategory.trim())) {
-      setLocalCategories([...localCategories, newCategory.trim()]);
-      setNewCategory('');
+  const handleAddCategory = async () => {
+    if (newCategory.trim() && !localCategories.some(cat => cat.name === newCategory.trim())) {
+      try {
+        const response = await fetch('/api/admin/categories', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newCategory.trim() }),
+        });
+
+        if (response.ok) {
+          const newCategoryData = await response.json();
+          setLocalCategories([...localCategories, newCategoryData]);
+          setNewCategory('');
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Erreur lors de l\'ajout de la catégorie');
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'ajout de la catégorie');
+      }
     }
   };
 
-  const handleDeleteCategory = (category: string) => {
+  const handleDeleteCategory = async (category: string) => {
     if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${category}" ?`)) {
-      setLocalCategories(localCategories.filter(c => c !== category));
+      try {
+        // Find category ID first
+        const categoriesResponse = await fetch('/api/admin/categories');
+        const categories = await categoriesResponse.json();
+        const categoryToDelete = categories.find((cat: any) => cat.name === category);
+
+        if (categoryToDelete) {
+          const response = await fetch(`/api/admin/categories/${categoryToDelete.id}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            setLocalCategories(localCategories.filter(c => c.id !== categoryToDelete.id));
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Erreur lors de la suppression de la catégorie');
+          }
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la suppression de la catégorie');
+      }
     }
   };
 
@@ -237,17 +417,32 @@ export default function AdminBoutiquePage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Catégorie</label>
                     <select
-                      value={newProduct.category}
-                      onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+                      value={newProduct.categoryId}
+                      onChange={(e) => setNewProduct({...newProduct, categoryId: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                     >
                       <option value="">Sélectionner une catégorie</option>
                       {localCategories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
+                        <option key={category.id} value={category.id}>
+                          {category.name}
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Image</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, false)}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                    />
+                    {newProduct.image && (
+                      <div className="mt-2">
+                        <img src={newProduct.image} alt="Preview" className="w-20 h-20 object-cover rounded" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center">
@@ -322,17 +517,32 @@ export default function AdminBoutiquePage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">Catégorie</label>
                     <select
-                      value={editingProduct.category}
-                      onChange={(e) => setEditingProduct({...editingProduct, category: e.target.value})}
+                      value={editingProduct.categoryId}
+                      onChange={(e) => setEditingProduct({...editingProduct, categoryId: e.target.value})}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                     >
                       <option value="">Sélectionner une catégorie</option>
                       {localCategories.map((category) => (
-                        <option key={category} value={category}>
-                          {category}
+                        <option key={category.id} value={category.id}>
+                          {category.name}
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">Image</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, true)}
+                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                    />
+                    {editingProduct.image && (
+                      <div className="mt-2">
+                        <img src={editingProduct.image} alt="Preview" className="w-20 h-20 object-cover rounded" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center">
@@ -394,10 +604,10 @@ export default function AdminBoutiquePage() {
                     <h4 className="text-sm font-medium text-gray-300 mb-2">Catégories existantes</h4>
                     <div className="space-y-2 max-h-40 overflow-y-auto">
                       {localCategories.map((category) => (
-                        <div key={category} className="flex justify-between items-center bg-gray-700 px-3 py-2 rounded-md">
-                          <span className="text-white text-sm">{category}</span>
+                        <div key={category.id} className="flex justify-between items-center bg-gray-700 px-3 py-2 rounded-md">
+                          <span className="text-white text-sm">{category.name}</span>
                           <button
-                            onClick={() => handleDeleteCategory(category)}
+                            onClick={() => handleDeleteCategory(category.name)}
                             className="text-red-400 hover:text-red-300 text-sm"
                           >
                             Supprimer
@@ -440,7 +650,7 @@ export default function AdminBoutiquePage() {
                   </div>
 
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-gray-300 text-sm">{product.category}</span>
+                    <span className="text-gray-300 text-sm">{product.category.name}</span>
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                       product.inStock
                         ? 'bg-green-900 text-green-300'
@@ -507,7 +717,7 @@ export default function AdminBoutiquePage() {
                       <div className="text-sm text-white font-medium">{product.price}€</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-300">{product.category}</div>
+                      <div className="text-sm text-gray-300">{product.category.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${

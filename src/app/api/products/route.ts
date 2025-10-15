@@ -1,61 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { products } from '../../../data/mockData';
+import { PrismaClient } from '@prisma/client';
 
-// GET /api/products - Get all products
-export async function GET(request: NextRequest) {
+const prisma = new PrismaClient();
+
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
-
-    let filteredProducts = products;
-
-    if (category && category !== 'all') {
-      filteredProducts = products.filter(product => product.category === category);
-    }
-
-    return NextResponse.json(filteredProducts);
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST /api/products - Create a new product (admin only)
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-
-    // Basic validation
-    const requiredFields = ['name', 'description', 'price', 'category'];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `Field ${field} is required` },
-          { status: 400 }
-        );
+    // Récupérer tous les produits avec leurs catégories
+    const products = await prisma.product.findMany({
+      include: {
+        category: true
       }
-    }
+    });
 
-    // Create new product
-    const newProduct = {
-      id: Date.now().toString(),
-      name: body.name,
-      description: body.description,
-      price: parseFloat(body.price),
-      image: body.image || '/images/default-product.jpg',
-      category: body.category,
-      inStock: body.inStock !== undefined ? body.inStock : true
-    };
+    // Récupérer toutes les catégories
+    const categories = await prisma.category.findMany();
 
-    // In a real app, this would be saved to a database
-    products.push(newProduct);
-
-    return NextResponse.json(newProduct, { status: 201 });
+    return NextResponse.json({
+      products,
+      categories: categories.map(cat => cat.name)
+    });
   } catch (error) {
+    console.error('Erreur lors de la récupération des produits:', error);
     return NextResponse.json(
-      { error: 'Failed to create product' },
+      { error: 'Erreur serveur' },
       { status: 500 }
     );
   }
