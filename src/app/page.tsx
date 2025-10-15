@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { testimonials } from "../data/mockData";
 import ArtistsSection from "../components/ArtistsSection";
+import "./services-animations.css";
 
 export default function Home() {
   return (
@@ -64,10 +65,10 @@ export default function Home() {
       <section className="relative py-16 bg-black overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-gray-900/85 to-black/80 z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-gray-900/95 to-black/90 z-10"></div>
           <Image
-            src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=800&fit=crop&crop=center"
-            alt="Table de mixage professionnelle sombre"
+            src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&h=800&fit=crop&crop=center"
+            alt="Studio d'enregistrement sombre avec équipement professionnel"
             fill
             className="object-cover"
           />
@@ -83,7 +84,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl">
+            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl animate-float-1">
               <div className="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">🎙️</span>
               </div>
@@ -91,7 +92,7 @@ export default function Home() {
               <p className="text-gray-300">Enregistrement professionnel avec matériel haut de gamme</p>
             </div>
 
-            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl">
+            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl animate-float-2">
               <div className="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">🎛️</span>
               </div>
@@ -99,7 +100,7 @@ export default function Home() {
               <p className="text-gray-300">Mixage professionnel pour sublimer vos productions</p>
             </div>
 
-            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl">
+            <div className="text-center bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 shadow-2xl animate-float-3">
               <div className="bg-gray-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">🎚️</span>
               </div>
