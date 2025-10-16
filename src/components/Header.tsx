@@ -9,16 +9,7 @@ export default function Header() {
   const pathname = usePathname();
 
   if (pathname?.startsWith('/admin')) {
-    return (
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
-        <nav className="container mx-auto px-6 py-6">
-          <div className="flex items-center space-x-4">
-            <img src="/image1.png" alt="La Planque" className="h-12 w-auto object-contain" />
-            <span className="text-3xl font-extrabold text-white">Administration</span>
-          </div>
-        </nav>
-      </header>
-    );
+    return null;
   }
 
   return (
