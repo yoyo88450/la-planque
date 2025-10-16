@@ -8,17 +8,25 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Hide header on admin pages
   if (pathname?.startsWith('/admin')) {
-    return null;
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
+        <nav className="container mx-auto px-6 py-6">
+          <div className="flex items-center space-x-4">
+            <img src="/image1.png" alt="La Planque" className="h-12 w-auto object-contain" />
+            <span className="text-3xl font-extrabold text-white">Administration</span>
+          </div>
+        </nav>
+      </header>
+    );
   }
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-gray-900 via-black to-gray-900 shadow-2xl border-b border-gray-800/50 backdrop-blur-sm">
       <nav className="container mx-auto px-6 py-6">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text hover:from-blue-200 hover:to-purple-200 transition-all duration-300 transform hover:scale-105">
-            La Planque
+          <Link href="/" className="transition-all duration-300 transform hover:scale-105">
+            <img src="/image1.png" alt="La Planque" className="h-12 w-auto object-contain" />
           </Link>
 
           {/* Desktop Navigation */}

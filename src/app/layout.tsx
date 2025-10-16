@@ -16,8 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "La Planque - Studio et production",
   description: "Découvrez La Planque, votre Studio d'enregistrement. Réservez votre session.",
+  icons: {
+    icon: '/image1.png',
+  },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
