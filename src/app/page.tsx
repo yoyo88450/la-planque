@@ -19,6 +19,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=800&fit=crop&crop=center"
               alt="Studio d'enregistrement professionnel"
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1200px"
               className="object-cover"
               priority
             />
@@ -27,27 +28,27 @@ export default function Home() {
           {/* Content */}
           <div className="relative z-20 container mx-auto px-4 text-center">
             <ScrollAnimation delay={0.2}>
-              <h1 className="text-6xl font-bold mb-6 drop-shadow-lg">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
                 Bienvenue à La Planque
               </h1>
             </ScrollAnimation>
             <ScrollAnimation delay={0.4}>
-              <p className="text-xl mb-8 max-w-2xl mx-auto drop-shadow-md">
+              <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto drop-shadow-md px-4">
                 Votre studio d'enregistrement professionnel.
                 Enregistrez vos meilleurs albums dans des conditions optimales.
               </p>
             </ScrollAnimation>
             <ScrollAnimation delay={0.6}>
-              <div className="space-x-4">
+              <div className="flex flex-col items-center sm:flex-row sm:justify-center sm:space-x-4 space-y-4 sm:space-y-0">
                 <Link
                   href="/reservation"
-                  className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-gray-200 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center"
                 >
                   Réserver maintenant
                 </Link>
                 <Link
                   href="/boutique"
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-semibold hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center"
                 >
                   Voir la boutique
                 </Link>
@@ -87,6 +88,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1200&h=800&fit=crop&crop=center"
               alt="Studio d'enregistrement sombre avec équipement professionnel"
               fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1200px"
               className="object-cover"
             />
           </div>

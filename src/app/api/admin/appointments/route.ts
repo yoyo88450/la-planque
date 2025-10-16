@@ -31,24 +31,24 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, description, date, duration, userId, clientName, clientEmail, clientPhone, clientMessage } = body;
+    const { title, description, date, duration, clientName, clientEmail, clientPhone, clientMessage } = body;
 
-    if (!title || !date || !userId) {
+    if (!title || !date) {
       return NextResponse.json(
-        { error: 'Titre, date et userId sont requis' },
+        { error: 'Titre et date sont requis' },
         { status: 400 }
       );
     }
 
-    // Vérifier si l'utilisateur existe
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
+    // Utiliser automatiquement l'utilisateur admin pour les réservations admin
+    const adminUser = await prisma.user.findFirst({
+      where: { role: 'admin' }
     });
 
-    if (!user) {
+    if (!adminUser) {
       return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
-        { status: 404 }
+        { error: 'Aucun utilisateur admin trouvé' },
+        { status: 500 }
       );
     }
 
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         description: description || null,
         date: new Date(date),
         duration: duration || 60,
-        userId,
+        userId: adminUser.id,
         clientName: clientName || null,
         clientEmail: clientEmail || null,
         clientPhone: clientPhone || null,

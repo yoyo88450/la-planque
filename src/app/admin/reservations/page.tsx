@@ -263,15 +263,7 @@ export default function AdminReservationsPage() {
     e.preventDefault();
 
     try {
-      // Get default user for new appointments
-      const userResponse = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'admin123' }) });
-      let userId = 'cmgsbo9ts00001rm0pdmc9922'; // Use the correct admin user ID from database
-
-      if (userResponse.ok) {
-        const userData = await userResponse.json();
-        // Since auth doesn't return user ID, use the correct one
-        userId = 'cmgsbo9ts00001rm0pdmc9922';
-      }
+      // No need to fetch userId anymore - API handles it automatically
 
       // Create appointments for each selected time slot
       const createdAppointments = [];
@@ -289,7 +281,7 @@ export default function AdminReservationsPage() {
             description: bookingFormData.message,
             date: appointmentDate.toISOString(),
             duration: 60,
-            userId: userId,
+
             clientName: bookingFormData.name,
             clientEmail: bookingFormData.email,
             clientPhone: bookingFormData.phone,
