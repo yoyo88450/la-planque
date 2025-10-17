@@ -4,6 +4,7 @@ import { useState } from 'react';
 import NavigationMenu from '../../../components/backend/NavigationMenu';
 import ArtistsTab from '../../../components/backend/reglage/ArtistsTab';
 import BoutiqueTab from '../../../components/backend/reglage/BoutiqueTab';
+import SettingsSwitches from '../../../components/backend/reglage/SettingsSwitches';
 
 type TabType = 'artists' | 'boutique';
 
@@ -21,6 +22,9 @@ export default function AdminReglagePage() {
           <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Réglages</h2>
           <p className="text-gray-400 text-sm md:text-base">Gérez les paramètres de l'application</p>
         </div>
+
+        {/* Settings Switches */}
+        <SettingsSwitches />
 
         {/* Tab Navigation */}
         <div className="mb-6">
