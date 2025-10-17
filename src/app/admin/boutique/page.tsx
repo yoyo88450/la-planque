@@ -12,7 +12,7 @@ import AccessDenied from '../../../components/boutique_admin/AccessDenied';
 import { Product, EditingProduct, Category, NewProduct } from '../../../components/boutique_admin/types';
 
 export default function AdminBoutiquePage() {
-  const { isAuthenticated } = useAdminStore();
+  // No authentication needed
   const [productList, setProductList] = useState<Product[]>([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
@@ -78,41 +78,42 @@ export default function AdminBoutiquePage() {
     fetchData();
   }, []);
 
-  if (!isAuthenticated) {
-    return <AccessDenied />;
-  }
+  // No authentication check needed
 
   const handleAddProduct = async () => {
-    if (newProduct.name && newProduct.description && newProduct.categoryId) {
-      try {
-        const response = await fetch('/api/admin/products', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: newProduct.name,
-            description: newProduct.description,
-            price: newProduct.price,
-            inStock: newProduct.inStock,
-            categoryId: newProduct.categoryId,
-            image: newProduct.image
-          }),
-        });
+    if (!newProduct.name || !newProduct.description || !newProduct.categoryId) {
+      alert('Veuillez remplir tous les champs obligatoires (nom, description, catégorie)');
+      return;
+    }
 
-        if (response.ok) {
-          const newProductData = await response.json();
-          setProductList([...productList, newProductData]);
-          setNewProduct({ name: '', description: '', price: 0, categoryId: '', inStock: true, image: '' });
-          setIsAddingProduct(false);
-        } else {
-          const error = await response.json();
-          alert(error.error || 'Erreur lors de l\'ajout du produit');
-        }
-      } catch (error) {
-        console.error('Erreur:', error);
-        alert('Erreur lors de l\'ajout du produit');
+    try {
+      const response = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: newProduct.name,
+          description: newProduct.description,
+          price: newProduct.price,
+          inStock: newProduct.inStock,
+          categoryId: newProduct.categoryId,
+          image: newProduct.image
+        }),
+      });
+
+      if (response.ok) {
+        const newProductData = await response.json();
+        setProductList([...productList, newProductData]);
+        setNewProduct({ name: '', description: '', price: 0, categoryId: '', inStock: true, image: '' });
+        setIsAddingProduct(false);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Erreur lors de l\'ajout du produit');
       }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de l\'ajout du produit');
     }
   };
 

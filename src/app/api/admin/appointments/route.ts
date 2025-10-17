@@ -6,13 +6,6 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const appointments = await prisma.appointment.findMany({
-      include: {
-        user: {
-          select: {
-            username: true
-          }
-        }
-      },
       orderBy: {
         date: 'desc'
       }
@@ -40,17 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Utiliser automatiquement l'utilisateur admin pour les réservations admin
-    const adminUser = await prisma.user.findFirst({
-      where: { role: 'admin' }
-    });
-
-    if (!adminUser) {
-      return NextResponse.json(
-        { error: 'Aucun utilisateur admin trouvé' },
-        { status: 500 }
-      );
-    }
+    // No user lookup needed - appointments can be created without user association
 
     const appointment = await prisma.appointment.create({
       data: {
@@ -58,19 +41,13 @@ export async function POST(request: NextRequest) {
         description: description || null,
         date: new Date(date),
         duration: duration || 60,
-        userId: adminUser.id,
+        // No userId needed
         clientName: clientName || null,
         clientEmail: clientEmail || null,
         clientPhone: clientPhone || null,
         clientMessage: clientMessage || null
-      },
-      include: {
-        user: {
-          select: {
-            username: true
-          }
-        }
       }
+      // No user include needed
     });
 
     return NextResponse.json(appointment);

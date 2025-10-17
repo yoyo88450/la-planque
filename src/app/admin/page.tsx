@@ -1,62 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useAdminStore } from '../../lib/stores';
 import { mockReservations } from '../../data/mockData';
 
 export default function AdminPage() {
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, login, logout } = useAdminStore();
+  const [appointmentsCount, setAppointmentsCount] = useState(0);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (login(password)) {
-      setLoginError('');
-    } else {
-      setLoginError('Mot de passe incorrect');
-    }
-  };
+  // Fetch appointments count for stats
+  useEffect(() => {
+    const fetchAppointmentsCount = async () => {
+      try {
+        const response = await fetch('/api/admin/appointments');
+        if (response.ok) {
+          const appointments = await response.json();
+          setAppointmentsCount(appointments.length);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des rendez-vous:', error);
+      }
+    };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <h1 className="text-3xl font-bold text-center mb-8 text-white">Administration</h1>
-
-          <div className="bg-gray-800 rounded-lg shadow-md p-8 border border-gray-700">
-            <form onSubmit={handleLogin}>
-              <div className="mb-6">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Mot de passe
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white"
-                  placeholder="Entrez le mot de passe"
-                />
-                {loginError && (
-                  <p className="text-red-600 text-sm mt-2">{loginError}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                Se connecter
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    fetchAppointmentsCount();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -94,12 +61,6 @@ export default function AdminPage() {
               >
                 Boutique
               </Link>
-              <button
-                onClick={logout}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm"
-              >
-                Déconnexion
-              </button>
             </div>
 
             {/* Mobile menu button */}
@@ -109,11 +70,7 @@ export default function AdminPage() {
                 className="text-white hover:text-gray-300 p-2"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
             </div>
@@ -142,7 +99,7 @@ export default function AdminPage() {
                 className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Artistes
-              </Link>                
+              </Link>
                 <Link
                   href="/admin/boutique"
                   className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -150,15 +107,6 @@ export default function AdminPage() {
                 >
                   Boutique
                 </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm text-left"
-                >
-                  Déconnexion
-                </button>
               </div>
             </div>
           )}
@@ -175,14 +123,14 @@ export default function AdminPage() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
           <div className="bg-gray-800 rounded-lg shadow-md p-4 md:p-6 border border-gray-700">
-            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Réservations aujourd'hui</h3>
+            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Rendez-vous aujourd'hui</h3>
             <p className="text-2xl md:text-3xl font-bold text-blue-400">
               {mockReservations.filter(r => r.date === new Date().toISOString().split('T')[0]).length}
             </p>
           </div>
 
           <div className="bg-gray-800 rounded-lg shadow-md p-4 md:p-6 border border-gray-700">
-            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Réservations cette semaine</h3>
+            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Rendez-vous cette semaine</h3>
             <p className="text-2xl md:text-3xl font-bold text-green-400">
               {mockReservations.filter(r => {
                 const reservationDate = new Date(r.date);
@@ -194,8 +142,8 @@ export default function AdminPage() {
           </div>
 
           <div className="bg-gray-800 rounded-lg shadow-md p-4 md:p-6 border border-gray-700">
-            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Total réservations</h3>
-            <p className="text-2xl md:text-3xl font-bold text-purple-400">{mockReservations.length}</p>
+            <h3 className="text-base md:text-lg font-semibold text-white mb-2">Total rendez-vous</h3>
+            <p className="text-2xl md:text-3xl font-bold text-purple-400">{appointmentsCount}</p>
           </div>
         </div>
 
@@ -207,7 +155,7 @@ export default function AdminPage() {
               href="/admin/reservations"
               className="bg-blue-600 text-white px-3 md:px-4 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center text-sm md:text-base"
             >
-              Gérer les réservations
+              Gérer les rendez-vous
             </Link>
             <Link
               href="/admin/boutique"

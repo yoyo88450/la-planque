@@ -23,13 +23,6 @@ export async function PUT(
         clientEmail: clientEmail || undefined,
         clientPhone: clientPhone || undefined,
         clientMessage: clientMessage || undefined
-      },
-      include: {
-        user: {
-          select: {
-            username: true
-          }
-        }
       }
     });
 

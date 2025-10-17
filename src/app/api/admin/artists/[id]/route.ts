@@ -5,9 +5,10 @@ const prisma = new PrismaClient();
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, description, profileImage, albumCover } = body;
 
@@ -19,7 +20,7 @@ export async function PUT(
     }
 
     const artist = await prisma.artist.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         description,
@@ -40,11 +41,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.artist.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Artiste supprimé avec succès' });

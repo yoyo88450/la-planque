@@ -15,7 +15,7 @@ import LoadingSpinner from '../../../components/reservation_admin/LoadingSpinner
 import { Appointment, Reservation } from '../../../components/reservation_admin/types';
 
 export default function AdminReservationsPage() {
-  const { isAuthenticated } = useAdminStore();
+  // No authentication needed
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -98,16 +98,7 @@ export default function AdminReservationsPage() {
 
   const reservations = convertToReservations(appointments);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Accès refusé</h1>
-          <p className="text-gray-400">Vous devez être connecté pour accéder à cette page.</p>
-        </div>
-      </div>
-    );
-  }
+  // No authentication check needed
 
   // Handle reservation click to show details
   const handleReservationClick = (reservation: Reservation) => {

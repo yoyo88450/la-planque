@@ -75,22 +75,4 @@ export const useBookingStore = create<BookingStore>((set, get) => ({
   getBookingsByDate: (date) => get().bookings.filter(b => b.date === date)
 }));
 
-// Admin store for session management
-interface AdminStore {
-  isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
-}
-
-export const useAdminStore = create<AdminStore>((set) => ({
-  isAuthenticated: false,
-  login: (password) => {
-    // Simple password check - in production, use proper authentication
-    if (password === 'admin123') {
-      set({ isAuthenticated: true });
-      return true;
-    }
-    return false;
-  },
-  logout: () => set({ isAuthenticated: false })
-}));
+// Admin store removed - no authentication needed

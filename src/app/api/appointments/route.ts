@@ -12,11 +12,7 @@ export async function GET() {
         date: true,
         duration: true,
         title: true,
-        user: {
-          select: {
-            username: true
-          }
-        }
+        clientName: true
       }
     });
 
@@ -32,7 +28,7 @@ export async function GET() {
         title: appointment.title,
         start: startStr,
         end: endStr,
-        user: appointment.user.username
+        user: appointment.clientName || 'Client'
       };
     });
 
@@ -58,18 +54,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Pour l'instant, on utilise un utilisateur par défaut (admin)
-    // Dans un vrai scénario, on récupérerait l'utilisateur connecté
-    const defaultUser = await prisma.user.findFirst({
-      where: { role: 'admin' }
-    });
+    // No user lookup needed for client appointments
 
-    if (!defaultUser) {
-      return NextResponse.json(
-        { error: 'Aucun utilisateur trouvé' },
-        { status: 400 }
-      );
-    }
+
 
     const createdAppointments = [];
 
@@ -85,7 +72,6 @@ export async function POST(request: NextRequest) {
           description: message || null,
           date: appointmentDate,
           duration: 60, // Durée par défaut
-          userId: defaultUser.id,
           clientName: name || null,
           clientEmail: email || null,
           clientPhone: phone || null,
