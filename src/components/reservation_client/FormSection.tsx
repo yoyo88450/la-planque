@@ -36,25 +36,32 @@ export default function FormSection({ formData, handleChange, onSubmit }: FormSe
           </div>
 
           {/* Selected Date/Times Display */}
-          {(formData.date && formData.times.length > 0) && (
+          {(formData.date && Object.values(formData.times).some((times: any) => times.length > 0)) && (
             <div className="p-4 bg-blue-900/30 border border-blue-600/50 rounded-xl">
               <div className="flex items-center space-x-2 text-blue-300 mb-2">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-medium">
-                  {formData.times.length === 1 ? 'Créneau sélectionné' : `${formData.times.length} créneaux sélectionnés`}
+                  Créneaux sélectionnés
                 </span>
               </div>
               <p className="text-white font-semibold mb-2">
                 {new Date(formData.date).toLocaleDateString('fr-FR')}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {formData.times.map((time: string) => (
-                  <span key={time} className="px-3 py-1 bg-blue-600/50 text-blue-200 rounded-lg text-sm">
-                    {time}
-                  </span>
-                ))}
+              <div className="space-y-2">
+                {Object.entries(formData.times).map(([duration, times]: [string, any]) =>
+                  times.length > 0 ? (
+                    <div key={duration} className="flex flex-wrap gap-2 items-center">
+                      <span className="text-blue-200 text-sm font-medium">{duration}h:</span>
+                      {times.map((time: string) => (
+                        <span key={time} className="px-3 py-1 bg-blue-600/50 text-blue-200 rounded-lg text-sm">
+                          {time}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null
+                )}
               </div>
             </div>
           )}
@@ -129,14 +136,14 @@ export default function FormSection({ formData, handleChange, onSubmit }: FormSe
 
         <button
           type="submit"
-          disabled={!formData.date || formData.times.length === 0 || !formData.service}
+          disabled={!formData.date || Object.values(formData.times).every((times: any) => times.length === 0) || !formData.service}
           className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
         >
           <span className="flex items-center justify-center">
             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Confirmer {formData.times.length > 1 ? `les ${formData.times.length} réservations` : 'la réservation'}
+            Confirmer la réservation
           </span>
         </button>
       </form>

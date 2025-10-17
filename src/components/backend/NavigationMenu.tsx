@@ -32,14 +32,6 @@ export default function NavigationMenu({ mobileMenuOpen, setMobileMenuOpen }: Na
               <span className="relative z-10">Réservations</span>
               <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/reservations' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
-            <Link href="/admin/artistes" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/admin/artistes' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
-              <span className="relative z-10">Artistes</span>
-              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/artistes' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-            </Link>
-            <Link href="/admin/boutique" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/admin/boutique' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
-              <span className="relative z-10">Boutique</span>
-              <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-            </Link>
             <Link href="/admin/reglage" className={`group relative transition-all duration-300 font-medium text-lg ${pathname === '/admin/reglage' ? 'text-white' : 'text-gray-300 hover:text-white'}`}>
               <span className="relative z-10">Réglages</span>
               <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/reglage' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
@@ -87,22 +79,6 @@ export default function NavigationMenu({ mobileMenuOpen, setMobileMenuOpen }: Na
               >
                 <span className="relative z-10">Réservations</span>
                 <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/reservations' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-              </Link>
-              <Link
-                href="/admin/artistes"
-                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/admin/artistes' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span className="relative z-10">Artistes</span>
-                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/artistes' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-              </Link>
-              <Link
-                href="/admin/boutique"
-                className={`group relative transition-all duration-300 font-medium text-lg py-2 ${pathname === '/admin/boutique' ? 'text-white' : 'text-gray-300 hover:text-white'}`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span className="relative z-10">Boutique</span>
-                <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/boutique' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
               </Link>
               <Link
                 href="/admin/reglage"

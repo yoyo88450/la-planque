@@ -10,7 +10,8 @@ import ConfirmationModal from '../../components/reservation_client/ConfirmationM
 export default function ReservationPage() {
   const [formData, setFormData] = useState({
     date: '',
-    times: [] as string[],
+    times: {} as Record<number, string[]>,
+    duration: 1,
     service: '',
     name: '',
     email: '',
@@ -51,17 +52,33 @@ export default function ReservationPage() {
     e.preventDefault();
 
     try {
-      // Créer les rendez-vous via l'API
-      const appointments = formData.times.map(time => ({
-        date: formData.date,
-        time: time,
-        service: formData.service,
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        guests: 1,
-        message: formData.message
-      }));
+      // Créer les rendez-vous via l'API - un appel pour chaque heure de la durée
+      const appointments = [];
+
+      // Get all selected times for the current duration
+      const selectedTimes = formData.times[formData.duration] || [];
+
+      for (const startTime of selectedTimes) {
+        const startDateTime = new Date(`${formData.date}T${startTime}`);
+
+        // Créer un rendez-vous pour chaque heure de la durée
+        for (let hour = 0; hour < formData.duration; hour++) {
+          const appointmentTime = new Date(startDateTime);
+          appointmentTime.setHours(startDateTime.getHours() + hour);
+          const timeStr = appointmentTime.toTimeString().slice(0, 5);
+
+          appointments.push({
+            date: formData.date,
+            time: timeStr,
+            service: formData.service,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            guests: 1,
+            message: formData.message
+          });
+        }
+      }
 
       const response = await fetch('/api/appointments', {
         method: 'POST',
@@ -76,15 +93,15 @@ export default function ReservationPage() {
         await fetchReservations();
 
         // Ajouter aussi au store local pour l'affichage immédiat
-        formData.times.forEach(time => {
+        appointments.forEach(appointment => {
           addBooking({
-            date: formData.date,
-            time: time,
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
+            date: appointment.date,
+            time: appointment.time,
+            name: appointment.name,
+            email: appointment.email,
+            phone: appointment.phone,
             guests: 1,
-            message: formData.message
+            message: appointment.message
           });
         });
 
@@ -104,7 +121,8 @@ export default function ReservationPage() {
     setIsSubmitted(true);
     setFormData({
       date: '',
-      times: [],
+      times: {},
+      duration: 1,
       service: '',
       name: '',
       email: '',

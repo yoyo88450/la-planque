@@ -25,7 +25,9 @@ export default function ConfirmationModal({ showConfirmationModal, setShowConfir
             <div className="text-sm text-gray-600 space-y-1">
               <p><strong>Service:</strong> {formData.service}</p>
               <p><strong>Date:</strong> {new Date(formData.date).toLocaleDateString('fr-FR')}</p>
-              <p><strong>Créneaux:</strong> {formData.times.join(', ')}</p>
+              <p><strong>Créneaux:</strong> {Object.entries(formData.times).map(([duration, times]) =>
+                (times as string[]).length > 0 ? `${(times as string[]).join(', ')} (${duration}h)` : null
+              ).filter(Boolean).join(' | ')}</p>
               <p><strong>Nom:</strong> {formData.name}</p>
             </div>
           </div>

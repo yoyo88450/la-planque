@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import NavigationMenu from '../../../components/backend/NavigationMenu';
-import { useAdminStore } from '../../../lib/stores';
+
 
 import Legend from '../../../components/backend/reservation_admin/Legend';
 import SelectedTimesSummary from '../../../components/backend/reservation_admin/SelectedTimesSummary';
@@ -12,6 +12,7 @@ import BookingFormModal from '../../../components/backend/reservation_admin/Book
 import EditFormModal from '../../../components/backend/reservation_admin/EditFormModal';
 import ReservationDetailsModal from '../../../components/backend/reservation_admin/ReservationDetailsModal';
 import LoadingSpinner from '../../../components/backend/reservation_admin/LoadingSpinner';
+import WeekNavigator from '../../../components/backend/reservation_admin/WeekNavigator';
 
 import { Appointment, Reservation } from '../../../components/backend/reservation_admin/types';
 
@@ -21,7 +22,7 @@ export default function AdminReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [currentDay, setCurrentDay] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
+  const [viewMode, setViewMode] = useState<'week' | 'month' | 'day'>('week');
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [bookingFormData, setBookingFormData] = useState({
@@ -364,62 +365,100 @@ export default function AdminReservationsPage() {
     <div className="min-h-screen bg-gray-900">
       <NavigationMenu />
 
-
+      <br></br>
+      <br></br>
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        <div className="flex items-center justify-between mb-6 md:mb-8">
-          <div>
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Agenda des réservations</h2>
-            <p className="text-gray-400 text-sm md:text-base">Vue complète de la semaine avec tous les rendez-vous</p>
+      <div className="container mx-auto px-4 py-12 md:py-16">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-12 md:mb-16 space-y-8 lg:space-y-0">
+          <div className="flex-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Agenda des réservations</h2>
+            <p className="text-gray-400 text-base md:text-lg">
+              {viewMode === 'day' ? 'Vue détaillée de la journée' : 'Vue complète de la semaine avec tous les rendez-vous'}
+            </p>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={goToPreviousWeek}
-              className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
+          <div className="flex flex-col space-y-6 w-full lg:w-auto">
+            {/* Navigation Controls */}
+            <div className="flex flex-col space-y-4">
+              {/* Week Navigation Row */}
+              <div className="flex items-center justify-center space-x-2 bg-gray-800/40 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-gray-700/30">
+                <button
+                  onClick={viewMode === 'day' ? goToPreviousDay : goToPreviousWeek}
+                  className="p-2 rounded-lg bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+                  title={viewMode === 'day' ? "Jour précédent" : "Semaine précédente"}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
 
-            <h3 className="text-lg md:text-xl font-semibold text-white min-w-[200px] text-center">
-              Semaine du {weekDates[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
-            </h3>
+                <div className="flex flex-col items-center min-w-[160px] px-3 py-2 bg-gradient-to-br from-gray-800/60 to-gray-700/60 rounded-lg shadow-inner">
+                  {viewMode === 'day' ? (
+                    <>
+                      <h3 className="text-sm md:text-base font-bold text-white text-center">
+                        {currentDay.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                      </h3>
+                      <p className="text-xs text-gray-400 text-center mt-1">
+                        {currentDay.toLocaleDateString('fr-FR', { year: 'numeric' })}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-sm md:text-base font-bold text-white text-center">
+                        Semaine du {weekDates[0].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
+                      </h3>
+                      <p className="text-xs text-gray-400 text-center mt-1">
+                        au {weekDates[6].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </p>
+                    </>
+                  )}
+                </div>
 
-            <button
-              onClick={goToNextWeek}
-              className="p-2 rounded-lg bg-gray-700/50 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-200"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+                <button
+                  onClick={viewMode === 'day' ? goToNextDay : goToNextWeek}
+                  className="p-2 rounded-lg bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+                  title={viewMode === 'day' ? "Jour suivant" : "Semaine suivante"}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
 
-            <button
-              onClick={fetchAppointments}
-              disabled={loading}
-              className="p-2 rounded-lg bg-blue-600/50 text-blue-300 hover:bg-blue-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Actualiser les rendez-vous"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            </button>
+                <button
+                  onClick={() => {
+                    if (viewMode === 'day') {
+                      setCurrentDay(new Date());
+                    } else {
+                      setCurrentWeek(new Date());
+                    }
+                  }}
+                  className="p-2 rounded-lg bg-gray-700/60 text-gray-300 hover:bg-gray-600 hover:text-white transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+                  title={viewMode === 'day' ? "Jour actuel" : "Semaine actuelle"}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12a9 9 0 012-5.657V3a1 1 0 011-1h1a1 1 0 010 2H5.414a7 7 0 00-2.828 2.828A7 7 0 0012 19a7 7 0 000-14v-.586a1 1 0 011-1h1a1 1 0 010 2h-1v.586A9 9 0 013 12z" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={fetchAppointments}
+                  disabled={loading}
+                  className="p-2 rounded-lg bg-gradient-to-r from-blue-600/60 to-blue-700/60 text-blue-300 hover:from-blue-600 hover:to-blue-700 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 hover:shadow-lg"
+                  title="Actualiser les rendez-vous"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Legend */}
         <Legend />
 
-        {/* Selected Times Summary */}
-        {selectedTimes.length > 0 && (
-          <SelectedTimesSummary
-            selectedTimes={selectedTimes}
-            setShowBookingForm={setShowBookingForm}
-            setSelectedTimes={setSelectedTimes}
-          />
-        )}
+
 
         {/* Weekly Calendar Grid */}
         <CalendarGrid
@@ -431,6 +470,8 @@ export default function AdminReservationsPage() {
           isTimeSelected={isTimeSelected}
           isDateInPast={isDateInPast}
           isTimeSlotInPast={isTimeSlotInPast}
+          viewMode={viewMode}
+          currentDay={currentDay}
         />
 
         {/* Booking Form Modal */}
@@ -466,6 +507,30 @@ export default function AdminReservationsPage() {
 
         {/* Loading State */}
         <LoadingSpinner loading={loading} />
+
+        {/* Floating Action Buttons */}
+        {selectedTimes.length > 0 && (
+          <div className="fixed bottom-4 right-4 flex items-center space-x-2 z-50">
+            <button
+              onClick={() => setSelectedTimes([])}
+              className="bg-gray-600 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition-all duration-300"
+              title="Annuler la sélection"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowBookingForm(true)}
+              className="bg-green-600 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition-all duration-300"
+              title="Ajouter une réservation"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
