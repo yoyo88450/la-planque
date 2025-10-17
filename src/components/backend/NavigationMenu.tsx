@@ -36,10 +36,6 @@ export default function NavigationMenu({ mobileMenuOpen, setMobileMenuOpen }: Na
               <span className="relative z-10">Réglages</span>
               <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/reglage' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
             </Link>
-            <Link href="/" className={`group relative transition-all duration-300 font-medium text-lg text-gray-300 hover:text-white`}>
-              <span className="relative z-10">Accueil</span>
-              <div className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 w-0 group-hover:w-full"></div>
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -87,14 +83,6 @@ export default function NavigationMenu({ mobileMenuOpen, setMobileMenuOpen }: Na
               >
                 <span className="relative z-10">Réglages</span>
                 <div className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 ${pathname === '/admin/reglage' ? 'w-full' : 'w-0 group-hover:w-full'}`}></div>
-              </Link>
-              <Link
-                href="/"
-                className={`group relative transition-all duration-300 font-medium text-lg py-2 text-gray-300 hover:text-white`}
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span className="relative z-10">Accueil</span>
-                <div className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 transition-all duration-300 w-0 group-hover:w-full"></div>
               </Link>
             </div>
           </div>
