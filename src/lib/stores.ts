@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 // Cart store for boutique
-interface CartItem {
+export interface CartItem {
   id: string;
   name: string;
   price: number;
