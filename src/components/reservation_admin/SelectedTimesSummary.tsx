@@ -1,11 +1,13 @@
 interface SelectedTimesSummaryProps {
   selectedTimes: string[];
   setShowBookingForm: (show: boolean) => void;
+  setSelectedTimes: (times: string[]) => void;
 }
 
 export default function SelectedTimesSummary({
   selectedTimes,
-  setShowBookingForm
+  setShowBookingForm,
+  setSelectedTimes
 }: SelectedTimesSummaryProps) {
   if (selectedTimes.length === 0) return null;
 
@@ -34,7 +36,7 @@ export default function SelectedTimesSummary({
             Réserver ({selectedTimes.length})
           </button>
           <button
-            onClick={() => {}}
+            onClick={() => setSelectedTimes([])}
             className="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors text-sm"
           >
             Désélectionner

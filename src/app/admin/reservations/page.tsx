@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAdminStore } from '../../../lib/stores';
-import NavigationMenu from '../../../components/reservation_admin/NavigationMenu';
-import CalendarHeader from '../../../components/reservation_admin/CalendarHeader';
+
 import Legend from '../../../components/reservation_admin/Legend';
 import SelectedTimesSummary from '../../../components/reservation_admin/SelectedTimesSummary';
 import CalendarGrid from '../../../components/reservation_admin/CalendarGrid';
@@ -12,6 +11,7 @@ import BookingFormModal from '../../../components/reservation_admin/BookingFormM
 import EditFormModal from '../../../components/reservation_admin/EditFormModal';
 import ReservationDetailsModal from '../../../components/reservation_admin/ReservationDetailsModal';
 import LoadingSpinner from '../../../components/reservation_admin/LoadingSpinner';
+
 import { Appointment, Reservation } from '../../../components/reservation_admin/types';
 
 export default function AdminReservationsPage() {
@@ -30,7 +30,6 @@ export default function AdminReservationsPage() {
     service: '',
     message: ''
   });
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [showReservationDetails, setShowReservationDetails] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
@@ -417,61 +416,14 @@ export default function AdminReservationsPage() {
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-white hover:text-gray-300 p-2"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
             </div>
           </div>
-
-          {/* Mobile Navigation */}
-          {mobileMenuOpen && (
-            <div className="md:hidden border-t border-gray-700 py-4">
-              <div className="flex flex-col space-y-2">
-                <Link
-                  href="/admin"
-                  className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Tableau de bord
-                </Link>
-                <Link
-                  href="/admin/reservations"
-                  className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Réservations
-                </Link>
-                <Link
-                href="/admin/artistes"
-                className="text-white hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Artistes
-                </Link>
-                <Link
-                  href="/admin/boutique"
-                  className="text-gray-300 hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Boutique
-                </Link>
-                <Link
-                  href="/admin"
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors text-sm text-left"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Retour
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </nav>
 
@@ -520,535 +472,63 @@ export default function AdminReservationsPage() {
           </div>
         </div>
 
-                {/* Legend */}
-        <div className="mt-4 md:mt-6 bg-gray-800 rounded-lg p-3 md:p-4 border border-gray-700">
-          <h4 className="text-white font-medium mb-3 text-sm md:text-base">Légende</h4>
-          <div className="flex flex-wrap gap-3 md:gap-4 text-xs md:text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 md:w-4 md:h-4 bg-gray-700/50 rounded"></div>
-              <span className="text-gray-300">Libre</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 md:w-4 md:h-4 bg-blue-600 rounded"></div>
-              <span className="text-gray-300">Réservé</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 md:w-4 md:h-4 bg-green-600 rounded"></div>
-              <span className="text-gray-300">Sélectionné</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 md:w-4 md:h-4 bg-gray-800/50 rounded"></div>
-              <span className="text-gray-300">Passé</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 md:w-4 md:h-4 bg-blue-900/20 border border-blue-600/30 rounded"></div>
-              <span className="text-gray-300">Aujourd'hui</span>
-            </div>
-          </div>
-        </div>
-
-        <br></br>
+        {/* Legend */}
+        <Legend />
 
         {/* Selected Times Summary */}
         {selectedTimes.length > 0 && (
-          <div className="mb-4 md:mb-6 bg-green-900/20 border border-green-600/30 rounded-lg p-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
-              <div>
-                <h4 className="text-green-300 font-semibold text-sm md:text-base">Créneaux sélectionnés ({selectedTimes.length})</h4>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedTimes.sort().map(slotKey => {
-                    const [dateStr, time] = slotKey.split('|');
-                    const date = new Date(dateStr);
-                    return (
-                      <span key={slotKey} className="px-3 py-1 bg-green-600/50 text-green-200 rounded-lg text-sm">
-                        {date.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' })} {time}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setShowBookingForm(true)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm"
-                >
-                  Réserver ({selectedTimes.length})
-                </button>
-                <button
-                  onClick={() => setSelectedTimes([])}
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition-colors text-sm"
-                >
-                  Désélectionner
-                </button>
-              </div>
-            </div>
-          </div>
+          <SelectedTimesSummary
+            selectedTimes={selectedTimes}
+            setShowBookingForm={setShowBookingForm}
+            setSelectedTimes={setSelectedTimes}
+          />
         )}
 
         {/* Weekly Calendar Grid */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-          {/* Header with days */}
-          <div className="grid grid-cols-8 gap-1 p-4 border-b border-gray-700">
-            <div className="text-center text-gray-400 font-medium text-sm py-2">Heure</div>
-            {weekDates.map((date, index) => {
-              const isToday = date.toDateString() === new Date().toDateString();
-              const isPast = isDateInPast(date);
-              return (
-                <div
-                  key={index}
-                  className={`text-center text-sm font-medium py-2 ${
-                    isToday
-                      ? 'text-blue-400 bg-blue-900/20 rounded-lg'
-                      : isPast
-                      ? 'text-gray-500'
-                      : 'text-gray-300'
-                  }`}
-                >
-                  <div className="font-semibold">
-                    {date.toLocaleDateString('fr-FR', { weekday: 'short' })}
-                  </div>
-                  <div className="text-xs">
-                    {date.getDate()}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Time slots grid */}
-          <div className="max-h-[60vh] md:max-h-[600px] overflow-y-auto">
-            {timeSlots.map((time) => (
-              <div key={time} className="grid grid-cols-8 gap-1 p-1">
-                <div className="p-2 text-center text-gray-400 font-medium text-sm bg-gray-700/30 rounded-lg flex items-center justify-center">
-                  {time}
-                </div>
-                {weekDates.map((date) => {
-                  const dateStr = date.toISOString().split('T')[0];
-                  const reservation = reservations.find(r => r.date === dateStr && r.time === time);
-                  const isSelected = isTimeSelected(dateStr, time);
-                  const isPast = isDateInPast(date) || isTimeSlotInPast(dateStr, time);
-                  const isToday = date.toDateString() === new Date().toDateString();
-
-                  return (
-                    <button
-                      key={`${dateStr}|${time}`}
-                      onClick={() => handleTimeClick(dateStr, time)}
-                      disabled={isPast}
-                      className={`p-2 rounded-lg text-xs font-medium transition-all duration-200 min-h-[60px] md:min-h-[80px] ${
-                        reservation
-                          ? 'bg-blue-600 text-white cursor-pointer hover:bg-blue-700'
-                          : isSelected
-                          ? 'bg-green-600 text-white cursor-pointer hover:bg-green-700'
-                          : isPast
-                          ? 'bg-gray-800/50 text-gray-500 cursor-not-allowed'
-                          : isToday
-                          ? 'bg-gray-700/50 text-gray-300 hover:bg-gray-600 border border-blue-600/30'
-                          : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600'
-                      }`}
-                    >
-                      {reservation ? (
-                        <div className="h-full flex flex-col justify-center text-center">
-                          <div className="font-semibold truncate">{reservation.name}</div>
-                          <div className="text-xs opacity-90">{reservation.service}</div>
-                          <div className="text-xs opacity-75 mt-1">{reservation.email}</div>
-                        </div>
-                      ) : isSelected ? (
-                        <div className="h-full flex items-center justify-center">
-                          <div className="text-center">
-                            <div className="font-semibold">Sélectionné</div>
-                            <div className="w-4 h-4 bg-white rounded-full mx-auto mt-1"></div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="h-full flex items-center justify-center text-center">
-                          {isPast ? 'Passé' : 'Libre'}
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
+        <CalendarGrid
+          weekDates={weekDates}
+          timeSlots={timeSlots}
+          reservations={reservations}
+          selectedTimes={selectedTimes}
+          handleTimeClick={handleTimeClick}
+          isTimeSelected={isTimeSelected}
+          isDateInPast={isDateInPast}
+          isTimeSlotInPast={isTimeSlotInPast}
+        />
 
         {/* Booking Form Modal */}
-        {showBookingForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-md max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-white">Nouvelle réservation</h3>
-                  <button
-                    onClick={() => setShowBookingForm(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="mb-6 p-4 bg-blue-900/30 border border-blue-600/50 rounded-xl">
-                  <div className="flex items-center space-x-2 text-blue-300 mb-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span className="text-sm font-medium">Créneaux sélectionnés ({selectedTimes.length})</span>
-                  </div>
-                  <div className="space-y-1">
-                    {selectedTimes.sort().map(slotKey => {
-                      const [dateStr, time] = slotKey.split('|');
-                      const date = new Date(dateStr);
-                      return (
-                        <p key={slotKey} className="text-white text-sm">
-                          {date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })} à {time}
-                        </p>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <form onSubmit={handleBookingSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="service" className="block text-sm font-medium text-gray-300 mb-2">
-                      Service souhaité *
-                    </label>
-                    <select
-                      id="service"
-                      name="service"
-                      required
-                      value={bookingFormData.service}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    >
-                      <option value="" className="bg-gray-700">Choisir un service</option>
-                      <option value="enregistrement" className="bg-gray-700">Enregistrement</option>
-                      <option value="mixage" className="bg-gray-700">Mixage</option>
-                      <option value="mastering" className="bg-gray-700">Mastering</option>
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                        Nom complet *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        value={bookingFormData.name}
-                        onChange={handleFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="Votre nom"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        value={bookingFormData.email}
-                        onChange={handleFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="votre@email.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
-                      Téléphone *
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      required
-                      value={bookingFormData.phone}
-                      onChange={handleFormChange}
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="+33 6 XX XX XX XX"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                      Message (optionnel)
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={3}
-                      value={bookingFormData.message}
-                      onChange={handleFormChange}
-                      placeholder="Informations supplémentaires, demandes spéciales..."
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                    />
-                  </div>
-
-                  <div className="flex space-x-3 pt-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                    >
-                      Confirmer la réservation
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowBookingForm(false)}
-                      className="px-6 py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
+        <BookingFormModal
+          showBookingForm={showBookingForm}
+          setShowBookingForm={setShowBookingForm}
+          selectedTimes={selectedTimes}
+          bookingFormData={bookingFormData}
+          setBookingFormData={setBookingFormData}
+          handleBookingSubmit={handleBookingSubmit}
+          handleFormChange={handleFormChange}
+        />
 
         {/* Edit Form Modal */}
-        {showEditForm && editingReservation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-md max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-white">Modifier la réservation</h3>
-                  <button
-                    onClick={() => setShowEditForm(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <form onSubmit={handleEditSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="edit-service" className="block text-sm font-medium text-gray-300 mb-2">
-                      Service souhaité *
-                    </label>
-                    <select
-                      id="edit-service"
-                      name="service"
-                      required
-                      value={editFormData.service}
-                      onChange={handleEditFormChange}
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    >
-                      <option value="" className="bg-gray-700">Choisir un service</option>
-                      <option value="enregistrement" className="bg-gray-700">Enregistrement</option>
-                      <option value="mixage" className="bg-gray-700">Mixage</option>
-                      <option value="mastering" className="bg-gray-700">Mastering</option>
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="edit-date" className="block text-sm font-medium text-gray-300 mb-2">
-                        Date *
-                      </label>
-                      <input
-                        type="date"
-                        id="edit-date"
-                        name="date"
-                        required
-                        value={editFormData.date}
-                        onChange={handleEditFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="edit-time" className="block text-sm font-medium text-gray-300 mb-2">
-                        Heure *
-                      </label>
-                      <input
-                        type="time"
-                        id="edit-time"
-                        name="time"
-                        required
-                        value={editFormData.time}
-                        onChange={handleEditFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="edit-name" className="block text-sm font-medium text-gray-300 mb-2">
-                        Nom complet *
-                      </label>
-                      <input
-                        type="text"
-                        id="edit-name"
-                        name="name"
-                        required
-                        value={editFormData.name}
-                        onChange={handleEditFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="Votre nom"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="edit-email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        id="edit-email"
-                        name="email"
-                        required
-                        value={editFormData.email}
-                        onChange={handleEditFormChange}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="votre@email.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="edit-phone" className="block text-sm font-medium text-gray-300 mb-2">
-                      Téléphone *
-                    </label>
-                    <input
-                      type="tel"
-                      id="edit-phone"
-                      name="phone"
-                      required
-                      value={editFormData.phone}
-                      onChange={handleEditFormChange}
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="+33 6 XX XX XX XX"
-                    />
-                  </div>
-
-                  <div className="flex space-x-3 pt-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                    >
-                      Modifier la réservation
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowEditForm(false)}
-                      className="px-6 py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transition-colors"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
+        <EditFormModal
+          showEditForm={showEditForm}
+          setShowEditForm={setShowEditForm}
+          editingReservation={editingReservation}
+          editFormData={editFormData}
+          setEditFormData={setEditFormData}
+          handleEditSubmit={handleEditSubmit}
+          handleEditFormChange={handleEditFormChange}
+        />
 
         {/* Reservation Details Modal */}
-        {showReservationDetails && selectedReservation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 w-full max-w-md max-h-[90vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-white">Détails de la réservation</h3>
-                  <button
-                    onClick={() => setShowReservationDetails(false)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-4 bg-blue-900/30 border border-blue-600/50 rounded-xl">
-                    <div className="flex items-center space-x-2 text-blue-300 mb-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span className="font-medium">Informations de réservation</span>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <p className="text-white">
-                        <span className="text-gray-400">Date:</span> {new Date(selectedReservation.date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-gray-400">Heure:</span> {selectedReservation.time}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-gray-400">Service:</span> {selectedReservation.service}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-700/50 border border-gray-600 rounded-xl">
-                    <div className="flex items-center space-x-2 text-gray-300 mb-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <span className="font-medium">Informations client</span>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      <p className="text-white">
-                        <span className="text-gray-400">Nom:</span> {selectedReservation.name}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-gray-400">Email:</span> {selectedReservation.email}
-                      </p>
-                      <p className="text-white">
-                        <span className="text-gray-400">Téléphone:</span> {selectedReservation.phone}
-                      </p>
-                      {selectedReservation.message && (
-                        <p className="text-white">
-                          <span className="text-gray-400">Message:</span> {selectedReservation.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-3 pt-4">
-                    <button
-                      onClick={() => handleEditReservation(selectedReservation)}
-                      className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-                    >
-                      Modifier
-                    </button>
-                    <button
-                      onClick={() => handleDeleteReservation(selectedReservation)}
-                      className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <ReservationDetailsModal
+          showReservationDetails={showReservationDetails}
+          setShowReservationDetails={setShowReservationDetails}
+          selectedReservation={selectedReservation}
+          handleEditReservation={handleEditReservation}
+          handleDeleteReservation={handleDeleteReservation}
+        />
 
         {/* Loading State */}
-        {loading && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-              <div className="flex items-center space-x-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                <span className="text-white">Chargement des rendez-vous...</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <LoadingSpinner loading={loading} />
       </div>
     </div>
   );
