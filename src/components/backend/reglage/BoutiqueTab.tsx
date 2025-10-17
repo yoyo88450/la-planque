@@ -1,26 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAdminStore } from '../../../lib/stores';
-import NavigationMenu from '../../../components/boutique_admin/NavigationMenu';
-import BoutiqueHeader from '../../../components/boutique_admin/BoutiqueHeader';
-import AddEditProductModal from '../../../components/boutique_admin/AddEditProductModal';
-import CategoryModal from '../../../components/boutique_admin/CategoryModal';
-import ProductsTable from '../../../components/boutique_admin/ProductsTable';
-import EmptyState from '../../../components/boutique_admin/EmptyState';
-import AccessDenied from '../../../components/boutique_admin/AccessDenied';
-import { Product, EditingProduct, Category, NewProduct } from '../../../components/boutique_admin/types';
+import BoutiqueHeader from '../boutique_admin/BoutiqueHeader';
+import AddEditProductModal from '../boutique_admin/AddEditProductModal';
+import CategoryModal from '../boutique_admin/CategoryModal';
+import ProductsTable from '../boutique_admin/ProductsTable';
+import EmptyState from '../boutique_admin/EmptyState';
+import { Product, EditingProduct, Category, NewProduct } from '../boutique_admin/types';
 
-export default function AdminBoutiquePage() {
-  // No authentication needed
+export default function BoutiqueTab() {
   const [productList, setProductList] = useState<Product[]>([]);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [newCategory, setNewCategory] = useState('');
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [boutiqueLoading, setBoutiqueLoading] = useState(true);
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: '',
     description: '',
@@ -30,6 +25,29 @@ export default function AdminBoutiquePage() {
     image: ''
   });
 
+  // Load boutique data
+  const loadBoutiqueData = async () => {
+    try {
+      setBoutiqueLoading(true);
+      const response = await fetch('/api/admin/products');
+
+      if (response.ok) {
+        const data = await response.json();
+        setProductList(Array.isArray(data.products) ? data.products : []);
+        setLocalCategories(Array.isArray(data.categories) ? data.categories : []);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des données boutique:', error);
+    } finally {
+      setBoutiqueLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBoutiqueData();
+  }, []);
+
+  // Boutique handlers
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -55,30 +73,6 @@ export default function AdminBoutiquePage() {
       }
     }
   };
-
-  // Fetch products and categories on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('/api/admin/products');
-
-        if (response.ok) {
-          const data = await response.json();
-          setProductList(Array.isArray(data.products) ? data.products : []);
-          setLocalCategories(Array.isArray(data.categories) ? data.categories : []);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  // No authentication check needed
 
   const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.description || !newProduct.categoryId) {
@@ -232,60 +226,53 @@ export default function AdminBoutiquePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <NavigationMenu mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
+    <div>
+      <BoutiqueHeader
+        onAddProduct={() => setIsAddingProduct(true)}
+        onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+      />
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        <BoutiqueHeader
-          onAddProduct={() => setIsAddingProduct(true)}
-          onOpenCategoryModal={() => setIsCategoryModalOpen(true)}
+      <AddEditProductModal
+        isOpen={isAddingProduct}
+        onClose={() => setIsAddingProduct(false)}
+        isEditing={false}
+        product={newProduct}
+        setProduct={setNewProduct}
+        categories={localCategories}
+        onSubmit={handleAddProduct}
+        onImageUpload={handleImageUpload}
+      />
+
+      <AddEditProductModal
+        isOpen={!!editingProduct}
+        onClose={() => setEditingProduct(null)}
+        isEditing={true}
+        product={editingProduct}
+        setProduct={setEditingProduct}
+        categories={localCategories}
+        onSubmit={handleUpdateProduct}
+        onImageUpload={handleImageUpload}
+      />
+
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        categories={localCategories}
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        onAddCategory={handleAddCategory}
+        onDeleteCategory={handleDeleteCategory}
+      />
+
+      {productList.length > 0 ? (
+        <ProductsTable
+          products={productList}
+          onEdit={handleEditProduct}
+          onDelete={handleDeleteProduct}
         />
-
-        <AddEditProductModal
-          isOpen={isAddingProduct}
-          onClose={() => setIsAddingProduct(false)}
-          isEditing={false}
-          product={newProduct}
-          setProduct={setNewProduct}
-          categories={localCategories}
-          onSubmit={handleAddProduct}
-          onImageUpload={handleImageUpload}
-        />
-
-        <AddEditProductModal
-          isOpen={!!editingProduct}
-          onClose={() => setEditingProduct(null)}
-          isEditing={true}
-          product={editingProduct}
-          setProduct={setEditingProduct}
-          categories={localCategories}
-          onSubmit={handleUpdateProduct}
-          onImageUpload={handleImageUpload}
-        />
-
-        <CategoryModal
-          isOpen={isCategoryModalOpen}
-          onClose={() => setIsCategoryModalOpen(false)}
-          categories={localCategories}
-          newCategory={newCategory}
-          setNewCategory={setNewCategory}
-          onAddCategory={handleAddCategory}
-          onDeleteCategory={handleDeleteCategory}
-        />
-
-        {productList.length > 0 ? (
-          <ProductsTable
-            products={productList}
-            onEdit={handleEditProduct}
-            onDelete={handleDeleteProduct}
-          />
-        ) : (
-          <EmptyState onAddProduct={() => setIsAddingProduct(true)} />
-        )}
-
-
-      </div>
+      ) : (
+        <EmptyState onAddProduct={() => setIsAddingProduct(true)} />
+      )}
     </div>
   );
 }

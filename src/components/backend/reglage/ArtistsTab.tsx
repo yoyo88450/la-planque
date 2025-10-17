@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import NavigationMenu from '../../../components/artiste_admin/NavigationMenu';
-import ArtistsHeader from '../../../components/artiste_admin/ArtistsHeader';
-import ArtistsGrid from '../../../components/artiste_admin/ArtistsGrid';
-import AddEditArtistModal from '../../../components/artiste_admin/AddEditArtistModal';
+import ArtistsHeader from '../artiste_admin/ArtistsHeader';
+import ArtistsGrid from '../artiste_admin/ArtistsGrid';
+import AddEditArtistModal from '../artiste_admin/AddEditArtistModal';
 
 interface Artist {
   id: string;
@@ -14,19 +13,19 @@ interface Artist {
   albumCover: string;
 }
 
-export default function ArtistsAdminPage() {
+export default function ArtistsTab() {
   const [artists, setArtists] = useState<Artist[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isArtistModalOpen, setIsArtistModalOpen] = useState(false);
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
-  const [formData, setFormData] = useState({
+  const [artistFormData, setArtistFormData] = useState({
     name: '',
     description: '',
     profileImage: '',
     albumCover: ''
   });
-  const [loading, setLoading] = useState(false);
+  const [artistLoading, setArtistLoading] = useState(false);
 
-  // Load artists from API
+  // Load artists
   const loadArtists = async () => {
     try {
       const response = await fetch('/api/admin/artists');
@@ -43,9 +42,10 @@ export default function ArtistsAdminPage() {
     loadArtists();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Artists handlers
+  const handleArtistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setArtistLoading(true);
 
     try {
       const url = editingArtist
@@ -59,14 +59,14 @@ export default function ArtistsAdminPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(artistFormData),
       });
 
       if (response.ok) {
         await loadArtists();
-        setFormData({ name: '', description: '', profileImage: '', albumCover: '' });
+        setArtistFormData({ name: '', description: '', profileImage: '', albumCover: '' });
         setEditingArtist(null);
-        setIsModalOpen(false);
+        setIsArtistModalOpen(false);
       } else {
         const error = await response.json();
         alert(error.error || 'Erreur lors de la sauvegarde');
@@ -75,22 +75,22 @@ export default function ArtistsAdminPage() {
       console.error('Erreur:', error);
       alert('Erreur lors de la sauvegarde');
     } finally {
-      setLoading(false);
+      setArtistLoading(false);
     }
   };
 
-  const handleEdit = (artist: Artist) => {
+  const handleEditArtist = (artist: Artist) => {
     setEditingArtist(artist);
-    setFormData({
+    setArtistFormData({
       name: artist.name,
       description: artist.description,
       profileImage: artist.profileImage,
       albumCover: artist.albumCover
     });
-    setIsModalOpen(true);
+    setIsArtistModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteArtist = async (id: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet artiste ?')) return;
 
     try {
@@ -109,36 +109,31 @@ export default function ArtistsAdminPage() {
     }
   };
 
-  const openAddModal = () => {
+  const openAddArtistModal = () => {
     setEditingArtist(null);
-    setFormData({ name: '', description: '', profileImage: '', albumCover: '' });
-    setIsModalOpen(true);
+    setArtistFormData({ name: '', description: '', profileImage: '', albumCover: '' });
+    setIsArtistModalOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <NavigationMenu />
+    <div>
+      <ArtistsHeader onAddArtist={openAddArtistModal} />
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        <ArtistsHeader onAddArtist={openAddModal} />
-
-        <ArtistsGrid
-          artists={artists}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onAddArtist={openAddModal}
-        />
-      </div>
+      <ArtistsGrid
+        artists={artists}
+        onEdit={handleEditArtist}
+        onDelete={handleDeleteArtist}
+        onAddArtist={openAddArtistModal}
+      />
 
       <AddEditArtistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isArtistModalOpen}
+        onClose={() => setIsArtistModalOpen(false)}
         editingArtist={editingArtist}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={handleSubmit}
-        loading={loading}
+        formData={artistFormData}
+        setFormData={setArtistFormData}
+        onSubmit={handleArtistSubmit}
+        loading={artistLoading}
       />
     </div>
   );
