@@ -3,33 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAdminStore } from '../../../lib/stores';
-
-interface Appointment {
-  id: string;
-  title: string;
-  description: string | null;
-  date: string;
-  duration: number;
-  user: {
-    username: string;
-  };
-  clientName?: string | null;
-  clientEmail?: string | null;
-  clientPhone?: string | null;
-  clientMessage?: string | null;
-}
-
-interface Reservation {
-  id: string;
-  date: string;
-  time: string;
-  name: string;
-  email: string;
-  phone: string;
-  guests: number;
-  message?: string;
-  service?: string;
-}
+import NavigationMenu from '../../../components/reservation_admin/NavigationMenu';
+import CalendarHeader from '../../../components/reservation_admin/CalendarHeader';
+import Legend from '../../../components/reservation_admin/Legend';
+import SelectedTimesSummary from '../../../components/reservation_admin/SelectedTimesSummary';
+import CalendarGrid from '../../../components/reservation_admin/CalendarGrid';
+import BookingFormModal from '../../../components/reservation_admin/BookingFormModal';
+import EditFormModal from '../../../components/reservation_admin/EditFormModal';
+import ReservationDetailsModal from '../../../components/reservation_admin/ReservationDetailsModal';
+import LoadingSpinner from '../../../components/reservation_admin/LoadingSpinner';
+import { Appointment, Reservation } from '../../../components/reservation_admin/types';
 
 export default function AdminReservationsPage() {
   const { isAuthenticated } = useAdminStore();
