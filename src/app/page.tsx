@@ -27,7 +27,7 @@ export default async function Home() {
     <div className="min-h-screen bg-black">
       <HeroSection />
 
-      <ScrollArrow sections={['about', 'services', artistsEnabled ? 'artists' : null, 'testimonials', 'contact'].filter(Boolean)} />
+      <ScrollArrow sections={['about', 'services', ...(artistsEnabled ? ['artists'] : []), 'testimonials', 'contact']} />
 
       <AboutSection />
 

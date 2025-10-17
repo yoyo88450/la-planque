@@ -18,10 +18,13 @@ export default function ArtistsSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+  const minSwipeDistance = 50; // Minimum distance for swipe recognition
 
   const visibleArtists = 3; // Always show 3 artists
   const radius = 280; // Further reduced radius for better visibility
-  const autoRotateInterval = 8000; // Auto-rotation interval
+  const autoRotateInterval = 4000; // Auto-rotation interval - accelerated to 4 seconds
 
   // Load artists from API
   useEffect(() => {
@@ -91,7 +94,7 @@ export default function ArtistsSection() {
           });
           setIsAnimating(false);
         }
-      }, 1000); // Wait for scroll animation to complete
+      }, 700); // Wait for scroll animation to complete - accelerated
     } else {
       // Artist is already at center, proceed with flip
       // If there are flipped cards and we're clicking on a different one, close them first
@@ -122,6 +125,44 @@ export default function ArtistsSection() {
   const handleDotClick = useCallback((index: number) => {
     setCurrentIndex(index);
   }, []);
+
+  // Touch navigation
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartX.current) return;
+
+    const currentX = e.targetTouches[0].clientX;
+    const diff = touchStartX.current - currentX;
+
+    // Only prevent default if it's a horizontal swipe (diff > 10px)
+    // Allow vertical scrolling for page navigation
+    if (Math.abs(diff) > 10) {
+      e.preventDefault();
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!touchStartX.current) return;
+
+    touchEndX.current = e.changedTouches[0].clientX;
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && artists.length > 1) {
+      // Swipe left: next artist
+      setCurrentIndex(prev => (prev + 1) % artists.length);
+    } else if (isRightSwipe && artists.length > 1) {
+      // Swipe right: previous artist
+      setCurrentIndex(prev => (prev - 1 + artists.length) % artists.length);
+    }
+
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  }, [artists.length, minSwipeDistance]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -204,7 +245,14 @@ export default function ArtistsSection() {
         </div>
 
         {/* Wheel Carousel */}
-        <div className="flex justify-center items-center overflow-hidden" ref={carouselRef}>
+        <div
+          className="flex justify-center items-center overflow-hidden"
+          ref={carouselRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: 'pan-y' }}
+        >
           <div className="relative w-full h-96 flex items-center justify-center">
             {wheelArtists.map((artist, index) => {
               const { x, y, scale, opacity } = getArtistPosition(index);
@@ -213,7 +261,7 @@ export default function ArtistsSection() {
               return (
                 <div
                   key={`${artist.id}-${index}`}
-                  className={`absolute transition-all duration-1000 ease-out ${
+                  className={`absolute transition-all duration-700 ease-out ${
                     isVisible ? 'pointer-events-auto' : 'pointer-events-none'
                   }`}
                   style={{
@@ -319,7 +367,7 @@ export default function ArtistsSection() {
             <span className="animate-pulse">💫</span>
           </p>
           <p className="text-gray-500 text-xs mt-2">
-            Utilisez les flèches ← → pour naviguer
+            Utilisez les flèches ← → ou glissez pour naviguer
           </p>
         </div>
       </div>
