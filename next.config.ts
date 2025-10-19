@@ -9,7 +9,21 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.scdn.co',
+        port: '',
+        pathname: '/**',
+      },
     ],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/spotify/callback',
+        destination: '/api/spotify/callback',
+      },
+    ];
   },
 };
 

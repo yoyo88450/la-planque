@@ -1,16 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NavigationMenu from '../../../components/backend/NavigationMenu';
 import ArtistsTab from '../../../components/backend/reglage/ArtistsTab';
 import BoutiqueTab from '../../../components/backend/reglage/BoutiqueTab';
+import SpotifyTab from '../../../components/backend/reglage/SpotifyTab';
 import SettingsSwitches from '../../../components/backend/reglage/SettingsSwitches';
 
-type TabType = 'artists' | 'boutique';
+type TabType = 'artists' | 'boutique' | 'spotify';
 
 export default function AdminReglagePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('artists');
+  const [settings, setSettings] = useState({
+    artistsEnabled: true,
+    boutiqueEnabled: true,
+    spotifyEnabled: false
+  });
+
+  // Load settings from API
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setSettings(data);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des paramètres:', error);
+      }
+    };
+
+    loadSettings();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -50,6 +73,16 @@ export default function AdminReglagePage() {
               >
                 Boutique
               </button>
+              <button
+                onClick={() => setActiveTab('spotify')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'spotify'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                Spotify
+              </button>
             </nav>
           </div>
         </div>
@@ -58,6 +91,8 @@ export default function AdminReglagePage() {
         {activeTab === 'artists' && <ArtistsTab />}
 
         {activeTab === 'boutique' && <BoutiqueTab />}
+
+        {activeTab === 'spotify' && <SpotifyTab />}
       </div>
     </div>
   );

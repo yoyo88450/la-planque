@@ -24,6 +24,9 @@ async function resetDatabase() {
     console.log('Suppression des utilisateurs...');
     await prisma.user.deleteMany();
 
+    console.log('Suppression des paramètres...');
+    await prisma.settings.deleteMany();
+
     console.log('✅ Base de données réinitialisée avec succès !');
     console.log('ℹ️  Toutes les données ont été supprimées.');
 

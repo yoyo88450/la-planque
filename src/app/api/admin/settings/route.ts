@@ -13,14 +13,19 @@ export async function GET() {
       settings = await prisma.settings.create({
         data: {
           artistsEnabled: true,
-          boutiqueEnabled: true
+          boutiqueEnabled: true,
+          spotifyEnabled: false
         }
       });
     }
 
     return NextResponse.json({
       artistsEnabled: settings.artistsEnabled,
-      boutiqueEnabled: settings.boutiqueEnabled
+      boutiqueEnabled: settings.boutiqueEnabled,
+      spotifyEnabled: settings.spotifyEnabled,
+      spotifyPlaylistId: settings.spotifyPlaylistId,
+      spotifyClientId: settings.spotifyClientId,
+      spotifyClientSecret: settings.spotifyClientSecret
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des paramètres:', error);
@@ -40,7 +45,11 @@ export async function PUT(request: NextRequest) {
       settings = await prisma.settings.create({
         data: {
           artistsEnabled: body.artistsEnabled ?? true,
-          boutiqueEnabled: body.boutiqueEnabled ?? true
+          boutiqueEnabled: body.boutiqueEnabled ?? true,
+          spotifyEnabled: body.spotifyEnabled ?? false,
+          spotifyPlaylistId: body.spotifyPlaylistId,
+          spotifyClientId: body.spotifyClientId,
+          spotifyClientSecret: body.spotifyClientSecret
         }
       });
     } else {
@@ -49,14 +58,22 @@ export async function PUT(request: NextRequest) {
         where: { id: settings.id },
         data: {
           artistsEnabled: body.artistsEnabled ?? settings.artistsEnabled,
-          boutiqueEnabled: body.boutiqueEnabled ?? settings.boutiqueEnabled
+          boutiqueEnabled: body.boutiqueEnabled ?? settings.boutiqueEnabled,
+          spotifyEnabled: body.spotifyEnabled ?? settings.spotifyEnabled,
+          spotifyPlaylistId: body.spotifyPlaylistId ?? settings.spotifyPlaylistId,
+          spotifyClientId: body.spotifyClientId ?? settings.spotifyClientId,
+          spotifyClientSecret: body.spotifyClientSecret ?? settings.spotifyClientSecret
         }
       });
     }
 
     return NextResponse.json({
       artistsEnabled: settings.artistsEnabled,
-      boutiqueEnabled: settings.boutiqueEnabled
+      boutiqueEnabled: settings.boutiqueEnabled,
+      spotifyEnabled: settings.spotifyEnabled,
+      spotifyPlaylistId: settings.spotifyPlaylistId,
+      spotifyClientId: settings.spotifyClientId,
+      spotifyClientSecret: settings.spotifyClientSecret
     });
   } catch (error) {
     console.error('Erreur lors de la mise à jour des paramètres:', error);

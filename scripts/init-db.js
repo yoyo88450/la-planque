@@ -180,12 +180,27 @@ async function initializeDatabase() {
     }
     console.log('✅ Produits créés:', createdProducts.length);
 
+    // Créer les paramètres par défaut
+    console.log('Création des paramètres par défaut...');
+    const settings = await prisma.settings.upsert({
+      where: { id: 'default-settings' },
+      update: {},
+      create: {
+        id: 'default-settings',
+        artistsEnabled: true,
+        boutiqueEnabled: true,
+        spotifyEnabled: false
+      }
+    });
+    console.log('✅ Paramètres par défaut créés');
+
     console.log('🎉 Base de données initialisée avec succès !');
     console.log('');
     console.log('📋 Résumé:');
     console.log('   - Catégories créées:', createdCategories.length);
     console.log('   - Artistes créés:', createdArtists.length);
     console.log('   - Produits créés:', createdProducts.length);
+    console.log('   - Paramètres créés: 1');
     console.log('');
     console.log('💡 Vous pouvez maintenant utiliser l\'application avec des données fictives.');
 

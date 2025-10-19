@@ -69,6 +69,12 @@ model Settings {
   id             String   @id @default(cuid())
   artistsEnabled Boolean  @default(true)
   boutiqueEnabled Boolean @default(true)
+  spotifyEnabled Boolean  @default(false)
+  spotifyPlaylistId String?
+  spotifyClientId String?
+  spotifyClientSecret String?
+  spotifyAccessToken String?
+  spotifyRefreshToken String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
