@@ -25,7 +25,12 @@ export async function GET() {
       spotifyEnabled: settings.spotifyEnabled,
       spotifyPlaylistId: settings.spotifyPlaylistId,
       spotifyClientId: settings.spotifyClientId,
-      spotifyClientSecret: settings.spotifyClientSecret
+      spotifyClientSecret: settings.spotifyClientSecret,
+      googleEnabled: settings.googleEnabled,
+      googleApiKey: settings.googleApiKey,
+      googleClientId: settings.googleClientId,
+      googleClientSecret: settings.googleClientSecret,
+      googlePlaceId: settings.googlePlaceId
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des paramètres:', error);
@@ -49,7 +54,12 @@ export async function PUT(request: NextRequest) {
           spotifyEnabled: body.spotifyEnabled ?? false,
           spotifyPlaylistId: body.spotifyPlaylistId,
           spotifyClientId: body.spotifyClientId,
-          spotifyClientSecret: body.spotifyClientSecret
+          spotifyClientSecret: body.spotifyClientSecret,
+          googleEnabled: body.googleEnabled ?? false,
+          googleApiKey: body.googleApiKey,
+          googleClientId: body.googleClientId,
+          googleClientSecret: body.googleClientSecret,
+          googlePlaceId: body.googlePlaceId
         }
       });
     } else {
@@ -62,7 +72,12 @@ export async function PUT(request: NextRequest) {
           spotifyEnabled: body.spotifyEnabled ?? settings.spotifyEnabled,
           spotifyPlaylistId: body.spotifyPlaylistId ?? settings.spotifyPlaylistId,
           spotifyClientId: body.spotifyClientId ?? settings.spotifyClientId,
-          spotifyClientSecret: body.spotifyClientSecret ?? settings.spotifyClientSecret
+          spotifyClientSecret: body.spotifyClientSecret ?? settings.spotifyClientSecret,
+          googleEnabled: body.googleEnabled ?? settings.googleEnabled,
+          googleApiKey: body.googleApiKey ?? settings.googleApiKey,
+          googleClientId: body.googleClientId ?? settings.googleClientId,
+          googleClientSecret: body.googleClientSecret ?? settings.googleClientSecret,
+          googlePlaceId: body.googlePlaceId ?? settings.googlePlaceId
         }
       });
     }
@@ -73,7 +88,12 @@ export async function PUT(request: NextRequest) {
       spotifyEnabled: settings.spotifyEnabled,
       spotifyPlaylistId: settings.spotifyPlaylistId,
       spotifyClientId: settings.spotifyClientId,
-      spotifyClientSecret: settings.spotifyClientSecret
+      spotifyClientSecret: settings.spotifyClientSecret,
+      googleEnabled: settings.googleEnabled,
+      googleApiKey: settings.googleApiKey,
+      googleClientId: settings.googleClientId,
+      googleClientSecret: settings.googleClientSecret,
+      googlePlaceId: settings.googlePlaceId
     });
   } catch (error) {
     console.error('Erreur lors de la mise à jour des paramètres:', error);

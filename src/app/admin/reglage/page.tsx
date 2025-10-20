@@ -5,9 +5,10 @@ import NavigationMenu from '../../../components/backend/NavigationMenu';
 import ArtistsTab from '../../../components/backend/reglage/ArtistsTab';
 import BoutiqueTab from '../../../components/backend/reglage/BoutiqueTab';
 import SpotifyTab from '../../../components/backend/reglage/SpotifyTab';
+import GoogleTab from '../../../components/backend/reglage/GoogleTab';
 import SettingsSwitches from '../../../components/backend/reglage/SettingsSwitches';
 
-type TabType = 'artists' | 'boutique' | 'spotify';
+type TabType = 'artists' | 'boutique' | 'spotify' | 'google';
 
 export default function AdminReglagePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -83,6 +84,16 @@ export default function AdminReglagePage() {
               >
                 Spotify
               </button>
+              <button
+                onClick={() => setActiveTab('google')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'google'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                }`}
+              >
+                Google
+              </button>
             </nav>
           </div>
         </div>
@@ -93,6 +104,8 @@ export default function AdminReglagePage() {
         {activeTab === 'boutique' && <BoutiqueTab />}
 
         {activeTab === 'spotify' && <SpotifyTab />}
+
+        {activeTab === 'google' && <GoogleTab />}
       </div>
     </div>
   );

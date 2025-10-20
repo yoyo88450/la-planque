@@ -75,6 +75,13 @@ model Settings {
   spotifyClientSecret String?
   spotifyAccessToken String?
   spotifyRefreshToken String?
+  googleEnabled Boolean  @default(false)
+  googleApiKey String?
+  googleClientId String?
+  googleClientSecret String?
+  googlePlaceId String?
+  googleAccessToken String?
+  googleRefreshToken String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
