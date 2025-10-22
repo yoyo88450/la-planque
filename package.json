@@ -12,6 +12,7 @@
     "@heroui/react": "^2.8.5",
     "@heroui/theme": "^2.4.23",
     "@prisma/client": "^6.17.1",
+    "@types/ws": "^8.18.1",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "framer-motion": "^12.23.24",
@@ -19,6 +20,7 @@
     "next": "15.5.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "ws": "^8.18.3",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

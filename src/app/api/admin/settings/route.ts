@@ -30,7 +30,9 @@ export async function GET() {
       googleApiKey: settings.googleApiKey,
       googleClientId: settings.googleClientId,
       googleClientSecret: settings.googleClientSecret,
-      googlePlaceId: settings.googlePlaceId
+      googlePlaceId: settings.googlePlaceId,
+      googleCalendarId: settings.googleCalendarId,
+      googleAccessToken: settings.googleAccessToken
     });
   } catch (error) {
     console.error('Erreur lors de la récupération des paramètres:', error);
@@ -77,7 +79,8 @@ export async function PUT(request: NextRequest) {
           googleApiKey: body.googleApiKey ?? settings.googleApiKey,
           googleClientId: body.googleClientId ?? settings.googleClientId,
           googleClientSecret: body.googleClientSecret ?? settings.googleClientSecret,
-          googlePlaceId: body.googlePlaceId ?? settings.googlePlaceId
+          googlePlaceId: body.googlePlaceId ?? settings.googlePlaceId,
+          googleCalendarId: body.googleCalendarId ?? settings.googleCalendarId
         }
       });
     }
@@ -93,7 +96,9 @@ export async function PUT(request: NextRequest) {
       googleApiKey: settings.googleApiKey,
       googleClientId: settings.googleClientId,
       googleClientSecret: settings.googleClientSecret,
-      googlePlaceId: settings.googlePlaceId
+      googlePlaceId: settings.googlePlaceId,
+      googleCalendarId: settings.googleCalendarId,
+      googleAccessToken: settings.googleAccessToken
     });
   } catch (error) {
     console.error('Erreur lors de la mise à jour des paramètres:', error);

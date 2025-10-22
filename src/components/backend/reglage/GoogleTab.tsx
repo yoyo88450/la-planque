@@ -8,6 +8,8 @@ interface Settings {
   googleClientId?: string;
   googleClientSecret?: string;
   googlePlaceId?: string;
+  googleCalendarId?: string;
+  googleAccessToken?: string;
 }
 
 export default function GoogleTab() {
@@ -68,6 +70,7 @@ export default function GoogleTab() {
     const updates: Partial<Settings> = {
       googleApiKey: formData.get('googleApiKey') as string || undefined,
       googlePlaceId: formData.get('googlePlaceId') as string || undefined,
+      googleCalendarId: formData.get('googleCalendarId') as string || undefined,
     };
     updateSettings(updates);
   };
@@ -84,6 +87,42 @@ export default function GoogleTab() {
     } catch (error) {
       console.error('Erreur:', error);
       alert('Erreur lors de l\'authentification Google');
+    }
+  };
+
+  const handleSetupWebhook = async () => {
+    try {
+      const response = await fetch('/api/google/calendar/webhook', {
+        method: 'PUT',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert('Webhook configuré avec succès ! Les changements dans Google Calendar seront maintenant synchronisés automatiquement.');
+      } else {
+        const errorData = await response.json();
+        alert(`Erreur lors de la configuration du webhook: ${errorData.message || errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la configuration du webhook');
+    }
+  };
+
+  const handleManualSync = async () => {
+    try {
+      const response = await fetch('/api/google/calendar/sync', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Synchronisation terminée ! ${data.message}`);
+      } else {
+        const errorData = await response.json();
+        alert(`Erreur lors de la synchronisation: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la synchronisation manuelle');
     }
   };
 
@@ -150,6 +189,22 @@ export default function GoogleTab() {
           </p>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            ID du Calendrier Google
+          </label>
+          <input
+            type="text"
+            name="googleCalendarId"
+            defaultValue={settings.googleCalendarId || ''}
+            placeholder="Entrez l'ID de votre calendrier Google"
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            ID du calendrier pour synchroniser les rendez-vous (primary ou ID personnalisé)
+          </p>
+        </div>
+
         <div className="flex gap-4">
           <button
             type="button"
@@ -164,11 +219,27 @@ export default function GoogleTab() {
             </svg>
             <span>Connexion Google</span>
           </button>
-          {settings.googleApiKey && settings.googlePlaceId && (
+          {settings.googleApiKey && settings.googlePlaceId && settings.googleCalendarId && (
             <span className="text-sm text-green-400 flex items-center">
               ✓ API configurée
             </span>
           )}
+          <button
+            type="button"
+            onClick={handleSetupWebhook}
+            disabled={!settings.googleAccessToken || !settings.googleCalendarId}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Configurer Webhook
+          </button>
+          <button
+            type="button"
+            onClick={handleManualSync}
+            disabled={!settings.googleAccessToken || !settings.googleCalendarId}
+            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Synchronisation Manuelle
+          </button>
           <button
             type="submit"
             disabled={saving}

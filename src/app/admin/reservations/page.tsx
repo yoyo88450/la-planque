@@ -16,6 +16,16 @@ import WeekNavigator from '../../../components/backend/reservation_admin/WeekNav
 
 import { Appointment, Reservation } from '../../../components/backend/reservation_admin/types';
 
+interface Settings {
+  googleEnabled: boolean;
+  googleApiKey?: string;
+  googleClientId?: string;
+  googleClientSecret?: string;
+  googlePlaceId?: string;
+  googleCalendarId?: string;
+  googleAccessToken?: string;
+}
+
 export default function AdminReservationsPage() {
   // No authentication needed
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -45,11 +55,70 @@ export default function AdminReservationsPage() {
     date: '',
     time: ''
   });
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const [syncLoading, setSyncLoading] = useState(false);
+
+  // Handle calendar sync
+  const handleSyncCalendars = async () => {
+    try {
+      setSyncLoading(true);
+      const response = await fetch('/api/google/calendar/sync', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        alert('Synchronisation avec Google Calendar réussie!');
+        fetchAppointments(); // Refresh appointments after sync
+      } else {
+        const errorData = await response.json();
+        alert(`Erreur lors de la synchronisation: ${errorData.error || 'Erreur inconnue'}`);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la synchronisation:', error);
+      alert('Erreur lors de la synchronisation avec Google Calendar');
+    } finally {
+      setSyncLoading(false);
+    }
+  };
 
   // Fetch appointments on component mount
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  // Set up real-time sync with Google Calendar
+  useEffect(() => {
+    // Set up webhook for real-time updates
+    const setupRealtimeSync = async () => {
+      try {
+        const response = await fetch('/api/google/calendar/webhook', {
+          method: 'PUT',
+        });
+
+        if (response.ok) {
+          console.log('Real-time sync with Google Calendar enabled');
+        } else {
+          console.log('Real-time sync setup failed, will use manual sync');
+        }
+      } catch (error) {
+        console.log('Real-time sync setup failed, will use manual sync');
+      }
+    };
+
+    // Only set up webhook if we have Google Calendar configured
+    if (settings?.googleAccessToken && settings?.googleCalendarId) {
+      setupRealtimeSync();
+    }
+
+    // Set up polling as fallback (every 5 minutes)
+    const pollInterval = setInterval(() => {
+      if (settings?.googleAccessToken && settings?.googleCalendarId) {
+        handleSyncCalendars();
+      }
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(pollInterval);
+  }, [settings]);
 
   // Detect screen size and set view mode
   useEffect(() => {
@@ -88,7 +157,7 @@ export default function AdminReservationsPage() {
         id: appointment.id,
         date: date.toISOString().split('T')[0],
         time: date.toTimeString().slice(0, 5),
-        name: appointment.clientName || appointment.user.username,
+        name: appointment.clientName || (appointment.user?.username) || 'Client',
         email: appointment.clientEmail || 'user@example.com',
         phone: appointment.clientPhone || '06 XX XX XX XX',
         guests: 1, // Default
@@ -448,6 +517,17 @@ export default function AdminReservationsPage() {
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+
+                <button
+                  onClick={handleSyncCalendars}
+                  disabled={syncLoading}
+                  className="p-2 rounded-lg bg-gradient-to-r from-green-600/60 to-green-700/60 text-green-300 hover:from-green-600 hover:to-green-700 hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-110 hover:shadow-lg"
+                  title="Synchroniser avec Google Calendar"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </button>
               </div>

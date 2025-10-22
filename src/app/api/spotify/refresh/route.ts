@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Spotify credentials not configured in settings' }, { status: 500 });
     }
 
-    // Get new access token using refresh token flow
+    // Get new access token using client credentials flow
     const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
@@ -22,8 +22,7 @@ export async function POST(request: NextRequest) {
         'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64')
       },
       body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: settings?.spotifyRefreshToken || ''
+        grant_type: 'client_credentials'
       })
     });
 
