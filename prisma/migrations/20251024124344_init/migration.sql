@@ -62,11 +62,11 @@ CREATE TABLE "Settings" (
     "artistsEnabled" BOOLEAN NOT NULL DEFAULT true,
     "boutiqueEnabled" BOOLEAN NOT NULL DEFAULT true,
     "spotifyEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "spotifyAccessToken" TEXT,
-    "spotifyRefreshToken" TEXT,
     "spotifyPlaylistId" TEXT,
     "spotifyClientId" TEXT,
     "spotifyClientSecret" TEXT,
+    "spotifyAccessToken" TEXT,
+    "spotifyRefreshToken" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
